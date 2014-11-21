@@ -1,0 +1,23 @@
+interface ISLAM
+interface IPointTracker {
+   provides tracks
+   of feature points
+}
+
+interface IBASolver {
+   solving of BA problem
+}
+
+interface IScene3D {
+   combining and
+   post processing
+   of the received results
+}
+
+class CCOnstrainedSLAM
+
+
+ISLAM <|-- CCOnstrainedSLAM
+CCOnstrainedSLAM *-- IPointTracker
+CCOnstrainedSLAM *-- IBASolver
+CCOnstrainedSLAM *-- IScene3D

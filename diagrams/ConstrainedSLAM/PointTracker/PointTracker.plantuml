@@ -1,0 +1,30 @@
+interface IPointTracker
+interface IFilter
+interface ITracker
+interface IOpticalFlowFeatureExtractor
+interface ISteinFeatureExtractor
+
+class CTrackerPipeline
+class CFilter1
+class CFilter2
+class CSteinTracker
+class CLKTracker
+class CFeatureOpticalFlow1
+class CFeatureOpticalFlow2
+class CFeatureStein1
+class CFeatureStein2
+
+IPointTracker <|-- CTrackerPipeline
+CTrackerPipeline *-- ITracker
+CTrackerPipeline *-- IFilter
+CSteinTracker *-- ISteinFeatureExtractor
+CLKTracker *-- IOpticalFlowFeatureExtractor
+
+ITracker <|-- CSteinTracker
+ITracker <|-- CLKTracker
+IOpticalFlowFeatureExtractor <|-- CFeatureOpticalFlow1
+IOpticalFlowFeatureExtractor <|-- CFeatureOpticalFlow2
+IFilter <|-- CFilter1
+IFilter <|-- CFilter2
+ISteinFeatureExtractor <|-- CFeatureStein1
+ISteinFeatureExtractor <|-- CFeatureStein2
