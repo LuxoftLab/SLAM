@@ -94,19 +94,19 @@ SET(CERES_ABI_VERSION 1.9.0)
 ENABLE_TESTING()
 
 OPTION(MINIGLOG "Use a stripped down version of glog." OFF)
-OPTION(GFLAGS "Enable Google Flags." ON)
-OPTION(SUITESPARSE "Enable SuiteSparse." ON)
-OPTION(CXSPARSE "Enable CXSparse." ON)
-OPTION(LAPACK "Enable use of LAPACK." ON)
+OPTION(GFLAGS "Enable Google Flags." OFF)
+OPTION(SUITESPARSE "Enable SuiteSparse." OFF)
+OPTION(CXSPARSE "Enable CXSparse." OFF)
+OPTION(LAPACK "Enable use of LAPACK." OFF)
 # Template specializations for the Schur complement based solvers. If
 # compile time, binary size or compiler performance is an issue, you
 # may consider disabling this.
-OPTION(SCHUR_SPECIALIZATIONS "Enable fixed-size schur specializations." ON)
+OPTION(SCHUR_SPECIALIZATIONS "Enable fixed-size schur specializations." OFF)
 OPTION(CUSTOM_BLAS
        "Use handcoded BLAS routines (usually faster) instead of Eigen."
-       ON)
+       OFF)
 # Multithreading using OpenMP
-OPTION(OPENMP "Enable threaded solving in Ceres (requires OpenMP)" ON)
+OPTION(OPENMP "Enable threaded solving in Ceres (requires OpenMP)" OFF)
 
 OPTION(BUILD_TESTING "Enable tests" OFF)
 OPTION(BUILD_DOCUMENTATION "Build User's Guide (html)" OFF)
