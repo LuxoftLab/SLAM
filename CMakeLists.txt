@@ -12,9 +12,12 @@ ENDFOREACH()
 find_package(OpenCV REQUIRED)
 find_package(Boost REQUIRED)
 
-include_directories(${OpenCV_INCLUDE_DIRS})
-include_directories(${Boost_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(test)
+INCLUDE_DIRECTORIES(ConstrainedSLAM)
 
 add_subdirectory(test)
-
+add_subdirectory(ConstrainedSLAM)
+add_subdirectory(CSLAMViewer)
 
