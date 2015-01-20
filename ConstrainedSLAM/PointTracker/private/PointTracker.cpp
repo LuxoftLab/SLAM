@@ -1,7 +1,8 @@
 
 #include <PointTracker/PointTracker.h>
+#include <iostream>
 
-PointTracker::PointTracker(cv::Size winSize, int maxLevel, int minPoints, int maxPoints) {
+PointTracker::PointTracker(cv::Size winSize, int maxLevel, int minPoints, int maxPoints) : frames(10), minPoints(minPoints) {
     tracker = new LKTracker(winSize, maxLevel, minPoints, maxPoints);
 }
 
@@ -9,42 +10,61 @@ PointTracker::~PointTracker() {
     delete tracker;
 }
 
-void PointTracker::setFirstFrame(cv::Mat &frame, std::vector<PointTrack> &points) {
+void PointTracker::setFirstFrame(cv::Mat &frame) {
     frameNumber = 0;
+    nextId = 0;
+    tracks.clear();
+    frames.clear();
 
+    cv::Mat gray;
+    cv::cvtColor(frame, gray, CV_BGR2GRAY);
+
+    prevFeatures.clear();
+    tracker->setFirstFrame(gray, prevFeatures);
+
+    std::cout << "found features: " << prevFeatures.size() << std::endl;
+    FramePtr f(new Frame);
+    for(int i = 0; i < prevFeatures.size(); i++) {
+        int id = nextId++;
+        PointTrack track;
+        track.points.resize(10);
+        track.firstFrame = track.lastFrame = frameNumber;
+        track.points.push_back(prevFeatures[i]);
+        tracks[id] = track;
+        f->points[id] = prevFeatures[i];
+    }
+    frames.push_back(f);
+}
+
+void PointTracker::findNewFeaturePositions(cv::Mat &frame, SensorData &sensors) {
     cv::Mat gray;
     cv::cvtColor(frame, gray, CV_BGR2GRAY);
 
     std::vector<cv::Point2f> features;
-    tracker->setFirstFrame(gray, features);
-    for(int i = 0; i < features.size(); i++) {
-        PointTrack tmp;
-        tmp.points.push_back(features[i]);
-        points.push_back(tmp);
+    std::vector<uchar> status;
+    tracker->findNewFeaturesPosition(gray, prevFeatures, features, status);
+
+    prevFeatures.clear();
+    FramePtr f(new Frame);
+    std::map<int, PointTrack>::iterator it = tracks.begin();
+    for(int i = 0; i < features.size(); i++, it++) {
+        while(it->second.lastFrame != frameNumber)
+            it++;
+        if(status[i]) {
+            f->points[it->first] = features[i];
+            prevFeatures.push_back(features[i]);
+            it->second.lastFrame++;
+            it->second.points.push_back(features[i]);
+        }
     }
+
+
+
+    frames.push_back(f);
+    frameNumber++;
 }
 
-void PointTracker::findNewFeaturePositions(cv::Mat &frame, std::vector<PointTrack> &points,
-                                           SensorData &sensors) {
-    cv::Mat gray;
-    cv::cvtColor(frame, gray, CV_BGR2GRAY);
-
-    std::vector<cv::Point2f> prevFeatures, features;
-    std::vector<uchar> status;
-    for(int i = 0; i < points.size(); i++) {
-        if(points[i].lastFrame == frameNumber) {
-            prevFeatures.push_back(points[i].points.back());
-        }
-    }
-    tracker->findNewFeaturesPosition(gray, prevFeatures, features, status);
-    for(int i = 0, j = 0; i < prevFeatures.size(); i++, j++) {
-        while(points[j].lastFrame != frameNumber)
-            j++;
-        if(status[i]) {
-            points[j].lastFrame++;
-            points[j].points.push_back(features[i]);
-        }
-    }
-    frameNumber++;
+std::map<int, PointTrack> & PointTracker::getTracks() {
+    return tracks;
 }
 

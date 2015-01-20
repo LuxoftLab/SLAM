@@ -1,9 +1,10 @@
 
-#include <vector>
+#include <map>
 #include <iostream>
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <boost/circular_buffer.hpp>
 #include <PointTracker/PointTracker.h>
 #include <Common/common.h>
 
@@ -16,33 +17,27 @@ int main() {
     cv::Mat frame;
     PointTracker tracker(cv::Size(21, 21), 5, 0, 50);
     SensorData s;
-    std::vector<PointTrack> points;
+    std::map<int, PointTrack> & tracks = tracker.getTracks();
     capture.grab();
     capture.retrieve(frame);
     cv::resize(frame, frame, cv::Size(800, 600));
-    tracker.setFirstFrame(frame, points);
-    std::cout << points.size() << std::endl;
-    for(int i = 0; i < points.size(); i++) {
-        cv::Point2f p = points[i].points[0];
-        cv::circle(frame, p, 10, cv::Scalar(i*5, i*5, 0));
-    }
-    cv::imshow("video", frame);
-    cv::waitKey(100);
+    tracker.setFirstFrame(frame);
+    std::cout << "before while" << std::endl;
     while(capture.grab()) {
-        capture.retrieve(frame);
-        cv::resize(frame, frame, cv::Size(800, 600));
-        tracker.findNewFeaturePositions(frame, points, s);
-        for(int i = 0; i < points.size(); i++) {
-            for(int j = 0; j < points[i].points.size(); j++) {
-                cv::Point2f p = points[i].points[j];
-                cv::circle(frame, p, 10, cv::Scalar(i*5, i*5, 0));
-                if(j) {
-                    cv::line(frame, p, points[i].points[j-1], cv::Scalar(i*5, i*5, 0));
-                }
+
+        std::cout << "found tracks: " << tracks.size() << std::endl;
+        for(std::map<int, PointTrack>::iterator it = tracks.begin(); it != tracks.end(); it++) {
+            for(boost::circular_buffer<cv::Point2f>::iterator itr = it->second.points.begin(); itr != it->second.points.end(); itr++) {
+                cv::circle(frame, *itr, 10, cv::Scalar(it->first*5, it->first*5, 0));
             }
         }
+        std::cout << "before draw" << std::endl;
         cv::imshow("video", frame);
-        cv::waitKey(100);
+        cv::waitKey();
+
+        capture.retrieve(frame);
+        cv::resize(frame, frame, cv::Size(800, 600));
+        tracker.findNewFeaturePositions(frame, s);
     }
     return 0;
 }
