@@ -29,4 +29,6 @@ public:
     void setFirstFrame(cv::Mat& frame);
     void findNewFeaturePositions(cv::Mat& frame, SensorData& sensors);
     std::map<int, PointTrack> & getTracks();
+
+    void addNewPoints(FramePtr frame, std::vector<cv::Point2f> & points);
 };
