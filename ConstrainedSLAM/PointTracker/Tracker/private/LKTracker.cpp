@@ -1,7 +1,7 @@
 
 #include <PointTracker/Tracker/tracker.h>
 
-LKTracker::LKTracker(cv::Size winSize, int maxLevel, int minPoints, int maxPoints) :
+LKTracker::LKTracker(cv::Size winSize, int maxLevel, int maxPoints) :
     winSize(winSize),
     maxLevel(maxLevel) {
     extractor = new OpticalFlowFeatureExtractor(maxPoints);
@@ -14,6 +14,10 @@ LKTracker::~LKTracker() {
 void LKTracker::setFirstFrame(cv::Mat &frame, std::vector<cv::Point2f> &fetures) {
     extractor->findFeature(frame, fetures);
     buildPyramid(frame, lastPyr);
+}
+
+void LKTracker::findNewFeatures(cv::Mat &frame, std::vector<cv::Point2f> &fetures, std::vector<cv::Point2f> &old) {
+    extractor->findFeature(frame, fetures, old);
 }
 
 void LKTracker::findNewFeaturesPosition(cv::Mat &frame, std::vector<cv::Point2f> &prevFeatures,

@@ -8,6 +8,7 @@
 #include <PointTracker/PointTracker.h>
 #include <Common/common.h>
 
+
 int main() {
     cv::VideoCapture capture("/home/gorz/VID_20150114_111402"
                              ".mp4");
@@ -15,7 +16,7 @@ int main() {
         return 1;
     }
     cv::Mat frame;
-    PointTracker tracker(cv::Size(21, 21), 5, 0, 50);
+    PointTracker tracker(cv::Size(21, 21), 5, 49, 50);
     SensorData s;
     std::map<int, PointTrack> & tracks = tracker.getTracks();
     capture.grab();

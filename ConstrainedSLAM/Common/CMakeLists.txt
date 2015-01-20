@@ -1,2 +1,2 @@
 
-#add_executable(common common.h)
+add_library(Common private/Frame.cpp Frame.h common.h)
