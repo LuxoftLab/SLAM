@@ -85,7 +85,6 @@ void PointTracker::addNewPoints(FramePtr frame, std::vector<cv::Point2f> & point
     for(int i = 0; i < points.size(); i++) {
         int id = nextId++;
         PointTrack track;
-        track.points.resize(10);
         track.firstFrame = track.lastFrame = frameNumber;
         track.points.push_back(points[i]);
         tracks[id] = track;

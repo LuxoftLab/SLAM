@@ -4,7 +4,7 @@
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include <boost/circular_buffer.hpp>
+#include <list>
 #include <PointTracker/PointTracker.h>
 #include <Common/common.h>
 
@@ -28,7 +28,7 @@ int main() {
 
         std::cout << "found tracks: " << tracks.size() << std::endl;
         for(std::map<int, PointTrack>::iterator it = tracks.begin(); it != tracks.end(); it++) {
-            for(boost::circular_buffer<cv::Point2f>::iterator itr = it->second.points.begin(); itr != it->second.points.end(); itr++) {
+            for(std::list<cv::Point2f>::iterator itr = it->second.points.begin(); itr != it->second.points.end(); itr++) {
                 cv::circle(frame, *itr, 10, cv::Scalar(it->first*5, it->first*5, 0));
             }
         }

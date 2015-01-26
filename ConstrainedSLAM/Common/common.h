@@ -2,10 +2,10 @@
 #define COMMON_H
 
 #include <opencv2/opencv.hpp>
-#include <boost/circular_buffer.hpp>
+#include <list>
 
 struct PointTrack {
-    boost::circular_buffer<cv::Point2f> points;
+    std::list<cv::Point2f> points;
     int firstFrame, lastFrame;
 };
 
