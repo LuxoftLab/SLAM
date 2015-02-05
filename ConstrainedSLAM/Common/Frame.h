@@ -7,13 +7,14 @@
 
 class Frame;
 typedef boost::shared_ptr<Frame> FramePtr;
+typedef boost::shared_ptr<cv::Point2f> Point2fPtr;
 
 #include<PointTracker/PointTracker.h>
 
 class Frame {
     IPointTracker * tracker;
 public:
-    std::map<int, cv::Point2f> points;
+    std::map<int, Point2fPtr> points;
 
     Frame(IPointTracker * tracker);
     ~Frame();

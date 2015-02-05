@@ -45,7 +45,8 @@ void PointTracker::findNewFeaturePositions(cv::Mat &frame, SensorData &sensors) 
         while(it->second.lastFrame != frameNumber)
             it++;
         if(status[i]) {
-            f->points[it->first] = features[i];
+			f->points[it->first] = Point2fPtr(new cv::Point2f);
+            *(f->points[it->first]) = features[i];
             prevFeatures.push_back(features[i]);
             it->second.lastFrame++;
             it->second.points.push_back(features[i]);
@@ -71,7 +72,7 @@ std::map<int, PointTrack> & PointTracker::getTracks() {
 }
 
 void PointTracker::removeFrame(Frame * frame) {
-    for(std::map<int, cv::Point2f>::iterator it = frame->points.begin(); it != frame->points.end(); it++) {
+    for(auto it = frame->points.begin(); it != frame->points.end(); it++) {
         PointTrack & track = tracks[it->first];
         if(track.points.size() == 1) {
             std::cout << "delete track: " << it->first << std::endl;
@@ -88,7 +89,8 @@ void PointTracker::addNewPoints(FramePtr frame, std::vector<cv::Point2f> & point
         track.firstFrame = track.lastFrame = frameNumber;
         track.points.push_back(points[i]);
         tracks[id] = track;
-        frame->points[id] = points[i];
+		frame->points[id] = Point2fPtr(new cv::Point2f());
+        *(frame->points[id]) = points[i];
     }
 }
 
