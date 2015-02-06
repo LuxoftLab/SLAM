@@ -17,7 +17,6 @@ class IPointTracker {
 public:
     virtual void setFirstFrame(cv::Mat& frame) = 0;
     virtual void findNewFeaturePositions(cv::Mat& frame, SensorData& sensors) = 0;
-    virtual void removeFrame(Frame * frame) = 0;
     virtual std::map<int, PointTrack> & getTracks() = 0;
 };
 
@@ -34,7 +33,6 @@ public:
 
     void setFirstFrame(cv::Mat& frame);
     void findNewFeaturePositions(cv::Mat& frame, SensorData& sensors);
-    void removeFrame(Frame * frame);
     std::map<int, PointTrack> & getTracks();
 
     void addNewPoints(FramePtr frame, std::vector<cv::Point2f> & points);

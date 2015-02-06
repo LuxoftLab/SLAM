@@ -10,8 +10,7 @@
 
 
 int main() {
-    cv::VideoCapture capture("/home/gorz/VID_20150114_111402"
-                             ".mp4");
+    cv::VideoCapture capture("/home/gorz/VID_20150114_111402.mp4");
     if(!capture.isOpened()) {
         return 1;
     }
@@ -27,8 +26,8 @@ int main() {
     while(capture.grab()) {
 
         std::cout << "found tracks: " << tracks.size() << std::endl;
-        for(std::map<int, PointTrack>::iterator it = tracks.begin(); it != tracks.end(); it++) {
-            for(std::list<cv::Point2f>::iterator itr = it->second.points.begin(); itr != it->second.points.end(); itr++) {
+        for(auto it = tracks.begin(); it != tracks.end(); it++) {
+            for(auto itr = it->second.points.begin(); itr != it->second.points.end(); itr++) {
                 cv::circle(frame, *itr, 10, cv::Scalar(it->first*5, it->first*5, 0));
             }
         }

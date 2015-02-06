@@ -5,18 +5,17 @@
 #include <map>
 #include <opencv2/opencv.hpp>
 
+#include "common.h"
+
 class Frame;
 typedef boost::shared_ptr<Frame> FramePtr;
-typedef boost::shared_ptr<cv::Point2f> Point2fPtr;
-
-#include<PointTracker/PointTracker.h>
 
 class Frame {
-    IPointTracker * tracker;
+    std::map<int, PointTrack> &tracks;
 public:
     std::map<int, Point2fPtr> points;
 
-    Frame(IPointTracker * tracker);
+    Frame(std::map<int, PointTrack> & tracks);
     ~Frame();
 
 };
