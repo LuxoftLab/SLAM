@@ -8,7 +8,7 @@
 typedef boost::shared_ptr<cv::Point2f> Point2fPtr;
 
 struct PointTrack {
-    std::list<cv::Point2f> points;
+    std::list<Point2fPtr> points;
     int firstFrame, lastFrame;
 };
 

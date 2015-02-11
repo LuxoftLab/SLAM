@@ -28,7 +28,7 @@ int main() {
         std::cout << "found tracks: " << tracks.size() << std::endl;
         for(auto it = tracks.begin(); it != tracks.end(); it++) {
             for(auto itr = it->second.points.begin(); itr != it->second.points.end(); itr++) {
-                cv::circle(frame, *itr, 10, cv::Scalar(it->first*5, it->first*5, 0));
+                cv::circle(frame, **itr, 10, cv::Scalar(it->first*5, it->first*5, 0));
             }
         }
         std::cout << "before draw" << std::endl;

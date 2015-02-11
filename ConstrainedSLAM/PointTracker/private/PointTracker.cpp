@@ -45,10 +45,11 @@ void PointTracker::findNewFeaturePositions(cv::Mat &frame, SensorData &sensors) 
         while(it->second.lastFrame != frameNumber)
             it++;
         if(status[i]) {
-            f->points[it->first] = Point2fPtr(new cv::Point2f(features[i]));
+			Point2fPtr temp = Point2fPtr(new cv::Point2f(features[i]));;
+            f->points[it->first] = temp;
             prevFeatures.push_back(features[i]);
             it->second.lastFrame++;
-            it->second.points.push_back(features[i]);
+            it->second.points.push_back(temp);
         }
     }
     std::cout << "finish update tracks"<< std::endl;
@@ -75,9 +76,10 @@ void PointTracker::addNewPoints(FramePtr frame, std::vector<cv::Point2f> & point
         int id = nextId++;
         PointTrack track;
         track.firstFrame = track.lastFrame = frameNumber;
-        track.points.push_back(points[i]);
+		Point2fPtr temp = Point2fPtr(new cv::Point2f(points[i]));
+        track.points.push_back(temp);
         tracks[id] = track;
-        frame->points[id] = Point2fPtr(new cv::Point2f(points[i]));
+        frame->points[id] = temp;
     }
 }
 
