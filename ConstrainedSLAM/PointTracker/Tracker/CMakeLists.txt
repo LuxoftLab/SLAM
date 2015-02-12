@@ -1,2 +1,5 @@
-add_library(OpticalFlow private/LKTracker.cpp private/OpticalFlowFeatureExtractor.cpp
-                        private/OpticalFlowFeatureExtractor.h tracker.h)
+add_library(OpticalFlow private/CLKTracker.cpp
+                        private/COpticalFlowFeatureExtractor.cpp
+                        private/COpticalFlowFeatureExtractor.hpp
+                        private/IOpticalFlowFeatureExtractor.hpp
+                        ITracker.hpp CLKTracker.hpp)

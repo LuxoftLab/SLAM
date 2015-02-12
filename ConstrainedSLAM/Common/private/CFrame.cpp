@@ -1,10 +1,10 @@
-#include <Common/Frame.h>
+#include <Common/CFrame.hpp>
 
-Frame::Frame(std::map<int, PointTrack> &tracks) : tracks(tracks) {
+CFrame::CFrame(PointTracks & tracks) : tracks(tracks) {
 
 }
 
-Frame::~Frame() {
+CFrame::~CFrame() {
     for(auto it = points.begin(); it != points.end(); it++) {
         PointTrack & track = tracks[it->first];
         if(track.points.size() == 1) {

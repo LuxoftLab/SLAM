@@ -5,8 +5,8 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <list>
-#include <PointTracker/PointTracker.h>
-#include <Common/common.h>
+#include <PointTracker/CPointTracker.hpp>
+#include <Common/Common.hpp>
 
 
 int main() {
@@ -15,9 +15,9 @@ int main() {
         return 1;
     }
     cv::Mat frame;
-    PointTracker tracker(cv::Size(21, 21), 5, 49, 50);
+    CPointTracker tracker(cv::Size(21, 21), 5, 49, 50);
     SensorData s;
-    std::map<int, PointTrack> & tracks = tracker.getTracks();
+    const PointTracks & tracks = tracker.getTracks();
     capture.grab();
     capture.retrieve(frame);
     cv::resize(frame, frame, cv::Size(800, 600));

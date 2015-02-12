@@ -1,16 +1,17 @@
 
 #include <iostream>
 
-#include "PointTracker/CPointTracker.hpp">
+#include "PointTracker/CPointTracker.hpp"
+#include "PointTracker/Tracker/CLKTracker.hpp"
 
-PointTracker::PointTracker(cv::Size winSize, int maxLevel, int minPoints, int maxPoints) :
+CPointTracker::CPointTracker(cv::Size winSize, int maxLevel, int minPoints, int maxPoints) :
     frames(10),
     minPoints(minPoints),
-    tracker(new LKTracker(winSize, maxLevel, maxPoints))
+    tracker(new CLKTracker(winSize, maxLevel, maxPoints))
 {
 }
 
-void PointTracker::setFirstFrame(cv::Mat &frame)
+void CPointTracker::setFirstFrame(cv::Mat &frame)
 {
     frameNumber = 0;
     nextId = 0;
@@ -24,12 +25,12 @@ void PointTracker::setFirstFrame(cv::Mat &frame)
     tracker->setFirstFrame(gray, prevFeatures);
 
     std::cout << "found features: " << prevFeatures.size() << std::endl;
-    FramePtr f(new Frame(tracks));
+    FramePtr f(new CFrame(tracks));
     addNewPoints(f, prevFeatures);
     frames.push_back(f);
 }
 
-void PointTracker::findNewFeaturePositions(cv::Mat &frame, SensorData &sensors)
+void CPointTracker::findNewFeaturePositions(cv::Mat &frame, SensorData &sensors)
 {
     cv::Mat gray;
     cv::cvtColor(frame, gray, CV_BGR2GRAY);
@@ -39,7 +40,7 @@ void PointTracker::findNewFeaturePositions(cv::Mat &frame, SensorData &sensors)
     tracker->findNewFeaturesPosition(gray, prevFeatures, features, status);
 
     prevFeatures.clear();
-    FramePtr f(new Frame(tracks));
+    FramePtr f(new CFrame(tracks));
     auto it = tracks.begin();
 
     std::cout << "start update tracks"<< std::endl;
@@ -74,12 +75,17 @@ void PointTracker::findNewFeaturePositions(cv::Mat &frame, SensorData &sensors)
     frames.push_back(f);
 }
 
-std::map<int, PointTrack> & PointTracker::getTracks()
+const PointTracks & CPointTracker::getTracks() const
 {
     return tracks;
 }
 
-void PointTracker::addNewPoints(FramePtr frame, std::vector<cv::Point2f> & points)
+const Frames & CPointTracker::getFrames() const
+{
+    return frames;
+}
+
+void CPointTracker::addNewPoints(FramePtr frame, std::vector<cv::Point2f> & points)
 {
     for(size_t i = 0; i < points.size(); i++)
     {

@@ -1,2 +1,2 @@
 
-add_library(Common private/Frame.cpp Frame.h common.h)
+add_library(Common private/CFrame.cpp CFrame.hpp Common.hpp)

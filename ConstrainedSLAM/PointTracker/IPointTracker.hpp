@@ -1,18 +1,12 @@
 #ifndef I_POINT_TRACKER_H
 #define I_POINT_TRACKER_H
 
-#include <vector>
-#include <map>
+#include <opencv2/opencv.hpp>
 
-#include <boost/circular_buffer.hpp>
-#include <boost/shared_ptr.hpp>
+#include "Common/Common.hpp"
+#include "Common/CFrame.hpp"
 
-class IPointTracker;
-
-#include <Common/common.h>
-#include <Common/Frame.h>
-
-#include "Tracker/tracker.h"
+#include "Tracker/ITracker.hpp"
 
 class IPointTracker {
 public:
