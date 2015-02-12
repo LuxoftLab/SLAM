@@ -7,20 +7,26 @@
 #include "private/COpticalFlowFeatureExtractor.hpp"
 
 class CLKTracker : public ITracker {
-    std::vector<cv::Mat> lastPyr;
-    cv::Size winSize;
-    int maxLevel;
-    boost::shared_ptr<IOpticalFlowFeatureExtractor> extractor;
+   static const cv::Size sWinSize;
+   static const int sMaxLevel;
 
-    void buildPyramid(cv::Mat& frame, std::vector<cv::Mat>& pyr);
+   std::vector<cv::Mat> mLastPyramid;
+   boost::shared_ptr<IOpticalFlowFeatureExtractor> mExtractor;
 
 public:
-    CLKTracker(cv::Size winSize, int maxLevel, int maxPoints);
+   CLKTracker(const int maxPoints);
 
-    void setFirstFrame(cv::Mat& frame, std::vector<cv::Point2f>& fetures);
-    void findNewFeatures(cv::Mat& frame, std::vector<cv::Point2f>& fetures, std::vector<cv::Point2f>& old);
-    void findNewFeaturesPosition(cv::Mat& frame, std::vector<cv::Point2f>& prevFetures,
-                                 std::vector<cv::Point2f>& fetures, std::vector<uchar>& status);
+   void setFirstFrame(const cv::Mat & img, const cv::Mat & grayImg,
+                      std::vector<cv::Point2f> & features);
+
+   void findNewFeatures(const cv::Mat & img, const cv::Mat & grayImg,
+                        std::vector<cv::Point2f>& features,
+                        const std::vector<cv::Point2f>& old);
+
+   void findNewFeaturesPosition(const cv::Mat & img,const cv::Mat & grayImg,
+                                const std::vector<cv::Point2f>& prevFeatures,
+                                std::vector<cv::Point2f>& features,
+                                std::vector<uchar>& status);
 };
 
 #endif

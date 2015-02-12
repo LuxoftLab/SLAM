@@ -4,12 +4,14 @@
 #include "IOpticalFlowFeatureExtractor.hpp"
 
 class COpticalFlowFeatureExtractor : public IOpticalFlowFeatureExtractor {
-    static const double qualityLevel, minDistance;
-    int maxCorners;
+   static const double sQualityLevel;
+   static const double sMinDistance;
+   int mMaxCorners;
 public:
-    COpticalFlowFeatureExtractor(int maxCorners);
-    void findFeature(cv::Mat& frame, std::vector<cv::Point2f>& features);
-    void findFeature(cv::Mat &frame, std::vector<cv::Point2f> &features, std::vector<cv::Point2f>& old);
+   COpticalFlowFeatureExtractor(const int maxCorners);
+   void findFeature(const cv::Mat & grayImg,
+                    std::vector<cv::Point2f>& features,
+                    const std::vector<cv::Point2f>& old);
 };
 
 #endif

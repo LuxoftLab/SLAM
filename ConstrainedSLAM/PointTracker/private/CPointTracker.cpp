@@ -4,98 +4,98 @@
 #include "PointTracker/CPointTracker.hpp"
 #include "PointTracker/Tracker/CLKTracker.hpp"
 
-CPointTracker::CPointTracker(cv::Size winSize, int maxLevel, int minPoints, int maxPoints) :
-    frames(10),
-    minPoints(minPoints),
-    tracker(new CLKTracker(winSize, maxLevel, maxPoints))
+CPointTracker::CPointTracker(const int framesNumber, const size_t minPoints,
+                             const int maxPoints) :
+   mFrames(framesNumber),
+   mMinPoints(minPoints),
+   mFrameNumber(0),
+   mNextId(0),
+   mTracker(new CLKTracker(maxPoints))
 {
 }
 
-void CPointTracker::setFirstFrame(cv::Mat &frame)
+void CPointTracker::processFrame(const cv::Mat & img, const cv::Mat & grayImg,
+                                 const SensorData & sensors)
 {
-    frameNumber = 0;
-    nextId = 0;
-    tracks.clear();
-    frames.clear();
+   if(mFrameNumber == 0) {
+      processFirstFrame(img, grayImg);
+      return;
+   }
 
-    cv::Mat gray;
-    cv::cvtColor(frame, gray, CV_BGR2GRAY);
+   std::vector<cv::Point2f> features;
+   std::vector<uchar> status;
+   mTracker->findNewFeaturesPosition(img, grayImg, mPrevFeatures, features, status);
 
-    prevFeatures.clear();
-    tracker->setFirstFrame(gray, prevFeatures);
+   mPrevFeatures.clear();
+   FramePtr frame(new CFrame(mTracks));
+   auto it = mTracks.begin();
 
-    std::cout << "found features: " << prevFeatures.size() << std::endl;
-    FramePtr f(new CFrame(tracks));
-    addNewPoints(f, prevFeatures);
-    frames.push_back(f);
-}
+   std::cout << "start update tracks"<< std::endl;
+   for(size_t i = 0; i < features.size(); i++, it++)
+   {
+      while(it->second.lastFrame != mFrameNumber)
+      {
+         it++;
+      }
+      if(status[i] != 0)
+      {
+         Point2fPtr temp(new cv::Point2f(features[i]));
+         frame->points[it->first] = temp;
+         mPrevFeatures.push_back(features[i]);
+         it->second.lastFrame++;
+         it->second.points.push_back(temp);
+      }
+   }
+   std::cout << "finish update tracks"<< std::endl;
 
-void CPointTracker::findNewFeaturePositions(cv::Mat &frame, SensorData &sensors)
-{
-    cv::Mat gray;
-    cv::cvtColor(frame, gray, CV_BGR2GRAY);
+   mFrameNumber++;
 
-    std::vector<cv::Point2f> features;
-    std::vector<uchar> status;
-    tracker->findNewFeaturesPosition(gray, prevFeatures, features, status);
+   if(mPrevFeatures.size() < mMinPoints)
+   {
+      std::vector<cv::Point2f> newPoints;
+      mTracker->findNewFeatures(img, grayImg, newPoints, mPrevFeatures);
+      std::cout << "new points: " << newPoints.size() << std::endl;
+      addNewPoints(frame, newPoints);
+      mPrevFeatures.insert(mPrevFeatures.end(), newPoints.begin(), newPoints.end());
+   }
 
-    prevFeatures.clear();
-    FramePtr f(new CFrame(tracks));
-    auto it = tracks.begin();
-
-    std::cout << "start update tracks"<< std::endl;
-    for(int i = 0; i < features.size(); i++, it++)
-    {
-        while(it->second.lastFrame != frameNumber)
-        {
-            it++;
-        }
-        if(status[i])
-        {
-			Point2fPtr temp = Point2fPtr(new cv::Point2f(features[i]));;
-            f->points[it->first] = temp;
-            prevFeatures.push_back(features[i]);
-            it->second.lastFrame++;
-            it->second.points.push_back(temp);
-        }
-    }
-    std::cout << "finish update tracks"<< std::endl;
-
-    frameNumber++;
-
-    if(prevFeatures.size() < minPoints)
-    {
-        std::vector<cv::Point2f> newPoints;
-        tracker->findNewFeatures(gray, newPoints, prevFeatures);
-        std::cout << "new points: " << newPoints.size() << std::endl;
-        addNewPoints(f, newPoints);
-        prevFeatures.insert(prevFeatures.end(), newPoints.begin(), newPoints.end());
-    }
-
-    frames.push_back(f);
+   mFrames.push_back(frame);
 }
 
 const PointTracks & CPointTracker::getTracks() const
 {
-    return tracks;
+   return mTracks;
 }
 
 const Frames & CPointTracker::getFrames() const
 {
-    return frames;
+   return mFrames;
 }
 
-void CPointTracker::addNewPoints(FramePtr frame, std::vector<cv::Point2f> & points)
+void CPointTracker::processFirstFrame(const cv::Mat & img, const cv::Mat & grayImg)
 {
-    for(size_t i = 0; i < points.size(); i++)
-    {
-        int id = nextId++;
-        PointTrack track;
-        track.firstFrame = track.lastFrame = frameNumber;
-		Point2fPtr temp = Point2fPtr(new cv::Point2f(points[i]));
-        track.points.push_back(temp);
-        tracks[id] = track;
-        frame->points[id] = temp;
-    }
+   mFrameNumber = 1;
+   mTracker->setFirstFrame(img, grayImg, mPrevFeatures);
+
+   std::cout << "found features: " << mPrevFeatures.size() << std::endl;
+   FramePtr frame(new CFrame(mTracks));
+   addNewPoints(frame, mPrevFeatures);
+   mFrames.push_back(frame);
+}
+
+void CPointTracker::addNewPoints(FramePtr frame,
+                                 const std::vector<cv::Point2f> & points)
+{
+   for(size_t i = 0; i < points.size(); i++)
+   {
+      int id = mNextId++;
+      PointTrack track;
+      track.firstFrame = mFrameNumber;
+      track.lastFrame = mFrameNumber;
+      Point2fPtr temp = Point2fPtr(new cv::Point2f(points[i]));
+      track.points.push_back(temp);
+      frame->points[id] = temp;
+      mTracks[id] = track;
+   }
 }
 

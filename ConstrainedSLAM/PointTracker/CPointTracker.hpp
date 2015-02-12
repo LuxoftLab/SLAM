@@ -12,21 +12,25 @@
 #include "IPointTracker.hpp"
 
 class CPointTracker : public IPointTracker {
-    int frameNumber, nextId, minPoints;
-    Frames frames;
-    PointTracks tracks;
-    boost::shared_ptr<ITracker> tracker;
-    std::vector<cv::Point2f> prevFeatures;
+   int mFrameNumber;
+   int mNextId;
+   size_t mMinPoints;
+   Frames mFrames;
+   PointTracks mTracks;
+   boost::shared_ptr<ITracker> mTracker;
+   std::vector<cv::Point2f> mPrevFeatures;
+
+   void processFirstFrame(const cv::Mat & img, const cv::Mat & grayImg);
+   void addNewPoints(FramePtr frame, const std::vector<cv::Point2f> & points);
 
 public:
-    CPointTracker(cv::Size winSize, int maxLevel, int minPoints, int maxPoints);
+   CPointTracker(const int framesNumber, const size_t minPoints, const int maxPoints);
 
-    void setFirstFrame(cv::Mat& frame);
-    void findNewFeaturePositions(cv::Mat& frame, SensorData& sensors);
-    const PointTracks & getTracks() const;
-    const Frames & getFrames() const;
+   void processFrame(const cv::Mat & img, const cv::Mat & grayImg,
+                     const SensorData & sensors);
 
-    void addNewPoints(FramePtr frame, std::vector<cv::Point2f> & points);
+   const PointTracks & getTracks() const;
+   const Frames & getFrames() const;
 };
 
 #endif

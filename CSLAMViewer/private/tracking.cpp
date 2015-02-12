@@ -10,34 +10,29 @@
 
 
 int main() {
-    cv::VideoCapture capture("/home/gorz/VID_20150114_111402.mp4");
-    if(!capture.isOpened()) {
-        return 1;
-    }
-    cv::Mat frame;
-    CPointTracker tracker(cv::Size(21, 21), 5, 49, 50);
-    SensorData s;
-    const PointTracks & tracks = tracker.getTracks();
-    capture.grab();
-    capture.retrieve(frame);
-    cv::resize(frame, frame, cv::Size(800, 600));
-    tracker.setFirstFrame(frame);
-    std::cout << "before while" << std::endl;
-    while(capture.grab()) {
+   cv::VideoCapture capture("/home/gorz/VID_20150114_111402.mp4");
+   if(!capture.isOpened()) {
+      return 1;
+   }
+   cv::Mat frame, grayFrame;
+   CPointTracker tracker(10, 49, 50);
+   SensorData s;
+   const PointTracks & tracks = tracker.getTracks();
+   while(capture.grab()) {
 
-        std::cout << "found tracks: " << tracks.size() << std::endl;
-        for(auto it = tracks.begin(); it != tracks.end(); it++) {
-            for(auto itr = it->second.points.begin(); itr != it->second.points.end(); itr++) {
-                cv::circle(frame, **itr, 10, cv::Scalar(it->first*5, it->first*5, 0));
-            }
-        }
-        std::cout << "before draw" << std::endl;
-        cv::imshow("video", frame);
-        cv::waitKey();
+      capture.retrieve(frame);
+      cv::resize(frame, frame, cv::Size(800, 600));
+      cv::cvtColor(frame, grayFrame, CV_BGR2GRAY);
+      tracker.processFrame(frame, grayFrame, s);
 
-        capture.retrieve(frame);
-        cv::resize(frame, frame, cv::Size(800, 600));
-        tracker.findNewFeaturePositions(frame, s);
-    }
-    return 0;
+      std::cout << "found tracks: " << tracks.size() << std::endl;
+      for(auto it = tracks.begin(); it != tracks.end(); it++) {
+         for(auto itr = it->second.points.begin(); itr != it->second.points.end(); itr++) {
+            cv::circle(frame, **itr, 10, cv::Scalar(it->first*5, it->first*5, 0));
+         }
+      }
+      cv::imshow("video", frame);
+      cv::waitKey();
+   }
+   return 0;
 }

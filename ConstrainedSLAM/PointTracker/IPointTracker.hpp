@@ -10,10 +10,11 @@
 
 class IPointTracker {
 public:
-    virtual void setFirstFrame(cv::Mat& frame) = 0;
-    virtual void findNewFeaturePositions(cv::Mat& frame, SensorData& sensors) = 0;
-    virtual const PointTracks & getTracks() const = 0;
-    virtual const Frames & getFrames() const = 0;
+   virtual void processFrame(const cv::Mat & img, const cv::Mat & grayImg,
+                             const SensorData & sensors) = 0;
+
+   virtual const PointTracks & getTracks() const = 0;
+   virtual const Frames & getFrames() const = 0;
 };
 
 #endif
