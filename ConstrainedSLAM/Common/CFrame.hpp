@@ -1,5 +1,5 @@
-#ifndef FRAME_H
-#define FRAME_H
+#ifndef C_FRAME_H
+#define C_FRAME_H
 
 #include <boost/shared_ptr.hpp>
 #include <boost/circular_buffer.hpp>
@@ -11,17 +11,18 @@
 
 #include "Common.hpp"
 
-class CFrame {
-    PointTracks & tracks;
-public:
-    std::map<int, Point2fPtr> points;
+class CFrame;
+#include "PointTracker/IPointTracker.hpp"
 
-    CFrame(PointTracks & tracks);
+class CFrame {
+    IPointTracker::tPointTracks & mTracks;
+public:
+    std::map<int, PointTrack::tPoint2fPtr> points;
+
+    CFrame(IPointTracker::tPointTracks & tracks);
     ~CFrame();
 
 };
 
-typedef boost::shared_ptr<CFrame> FramePtr;
-typedef boost::circular_buffer<FramePtr> Frames;
 
 #endif

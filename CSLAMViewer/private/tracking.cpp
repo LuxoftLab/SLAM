@@ -17,7 +17,7 @@ int main() {
    cv::Mat frame, grayFrame;
    CPointTracker tracker(10, 49, 50);
    SensorData s;
-   const PointTracks & tracks = tracker.getTracks();
+   const IPointTracker::tPointTracks & tracks = tracker.getTracks();
    while(capture.grab()) {
 
       capture.retrieve(frame);

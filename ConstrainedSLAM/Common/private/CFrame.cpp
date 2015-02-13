@@ -1,15 +1,15 @@
 #include <Common/CFrame.hpp>
 
-CFrame::CFrame(PointTracks & tracks) : tracks(tracks) {
+CFrame::CFrame(IPointTracker::tPointTracks & tracks) : mTracks(tracks) {
 
 }
 
 CFrame::~CFrame() {
     for(auto it = points.begin(); it != points.end(); it++) {
-        PointTrack & track = tracks[it->first];
+        PointTrack & track = mTracks[it->first];
         if(track.points.size() == 1) {
             std::cout << "delete track: " << it->first << std::endl;
-            tracks.erase(it->first);
+            mTracks.erase(it->first);
         } else {
             track.points.pop_front();
         }
