@@ -4,6 +4,8 @@
 #include "PointTracker/CPointTracker.hpp"
 #include "PointTracker/Tracker/CLKTracker.hpp"
 
+#include "Common/LogUtils/CProfiler.hpp"
+
 CPointTracker::CPointTracker(const int framesNumber, const size_t minPoints,
                              const int maxPoints) :
    mFrames(framesNumber),
@@ -17,6 +19,7 @@ CPointTracker::CPointTracker(const int framesNumber, const size_t minPoints,
 void CPointTracker::processFrame(const cv::Mat & img, const cv::Mat & grayImg,
                                  const SensorData & sensors)
 {
+   START_PROFILING(profiler);
    if(mFrameNumber == 0) {
       processFirstFrame(img, grayImg);
       return;
