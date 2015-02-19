@@ -1,11 +1,13 @@
 #include "Common/LogUtils/CProfiler.hpp"
 
 #include <iostream>
+#include <string>
 
-CProfiler::CProfiler(const char * file, const char * function, const int line) :
+CProfileManager & CProfiler::sProfileManager = CProfileManager::getInstance();
+
+CProfiler::CProfiler(const char * file, const char * function) :
    mFile(file),
    mFunction(function),
-   mLine(line),
    mStart(tClock::now())
 {
 }
@@ -13,10 +15,8 @@ CProfiler::CProfiler(const char * file, const char * function, const int line) :
 CProfiler::~CProfiler()
 {
    using boost::chrono::duration_cast;
+   typedef CProfileManager::tTimeAccuracy tTimeAccuracy;
    tClock::duration mc = tClock::now() - mStart;
-   std::cout << std::endl << "Profile info:" << std::endl
-             << "File: " << mFile << std::endl
-             << "Function: " << mFunction << std::endl
-             << "Profiling starts at line " << mLine << ": "
-             << duration_cast<tMicroseconds>(mc) << std::endl << std::endl;
+   tTimeAccuracy tmp = duration_cast<tTimeAccuracy>(mc);
+   sProfileManager.addResult(mFile, mFunction, tmp.count());
 }

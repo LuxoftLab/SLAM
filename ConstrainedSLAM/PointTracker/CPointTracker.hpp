@@ -16,8 +16,8 @@ class CPointTracker : public IPointTracker {
    int mFrameNumber;
    int mNextId;
    size_t mMinPoints;
-   tFrames mFrames;
    tPointTracks mTracks;
+   tFrames mFrames;
    boost::shared_ptr<ITracker> mTracker;
    std::vector<cv::Point2f> mPrevFeatures;
 
