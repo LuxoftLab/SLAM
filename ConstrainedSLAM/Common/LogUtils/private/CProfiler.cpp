@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 
-CProfileManager & CProfiler::sProfileManager = CProfileManager::getInstance();
+CProfilesCollector & CProfiler::sProfilesCollector = CProfilesCollector::getInstance();
 
 CProfiler::CProfiler(const char * file, const char * function) :
    mFile(file),
@@ -14,9 +14,10 @@ CProfiler::CProfiler(const char * file, const char * function) :
 
 CProfiler::~CProfiler()
 {
-   using boost::chrono::duration_cast;
-   typedef CProfileManager::tTimeAccuracy tTimeAccuracy;
-   tClock::duration mc = tClock::now() - mStart;
-   tTimeAccuracy tmp = duration_cast<tTimeAccuracy>(mc);
-   sProfileManager.addResult(mFile, mFunction, tmp.count());
+   tClock::duration duration = tClock::now() - mStart;
+
+   CProfilesCollector::tTimeAccuracy microseconds =
+      boost::chrono::duration_cast<CProfilesCollector::tTimeAccuracy>(duration);
+
+   sProfilesCollector.addResult(mFile, mFunction, microseconds.count());
 }

@@ -1,6 +1,6 @@
 add_library(Profiler private/CProfiler.cpp
-                     private/CProfileManager.cpp
-                     private/CProfileManager.hpp
+                     private/CProfilesCollector.cpp
+                     private/CProfilesCollector.hpp
                      CProfiler.hpp)
 find_package(Boost COMPONENTS chrono system REQUIRED)
 target_link_libraries(Profiler

@@ -5,7 +5,7 @@
 
 #include <boost/chrono.hpp>
 
-#include "private/CProfileManager.hpp"
+#include "private/CProfilesCollector.hpp"
 
 #define _TO_STR(v) #v
 #define TO_STR(v) _TO_STR(v)
@@ -14,12 +14,15 @@
 class CProfiler {
    typedef boost::chrono::high_resolution_clock tClock;
 
-   static CProfileManager & sProfileManager;
+   static CProfilesCollector & sProfilesCollector;
 
-   const std::string mFile;
-   const std::string mFunction;
+   const char * mFile;
+   const char * mFunction;
 
    tClock::time_point mStart;
+
+   CProfiler(const CProfiler &);
+   const CProfiler & operator=(const CProfiler &);
 
 public:
    CProfiler(const char * file, const char * function);
