@@ -19,7 +19,7 @@ CPointTracker::CPointTracker(const int framesNumber, const size_t minPoints,
 void CPointTracker::processFrame(const cv::Mat & img, const cv::Mat & grayImg,
                                  const SensorData & sensors)
 {
-   START_PROFILING(profiler);
+   START_PROFILING("profiler");
    if(mFrameNumber == 0) {
       processFirstFrame(img, grayImg);
       return;

@@ -8,8 +8,10 @@ CProfilesCollector & CProfilesCollector::getInstance()
    return singleton;
 }
 
-CProfilesCollector::Info::Info(const char * function, const tTime & time) :
+CProfilesCollector::Info::Info(const char * function, const char * name,
+                               const tTime & time) :
    mFunction(function),
+   mName(name),
    mCallsNum(1),
    mAllTime(time),
    mMaxTime(time),
@@ -27,7 +29,7 @@ CProfilesCollector::~CProfilesCollector()
    {
       Info & info = it->second;
       std::cout << std::endl
-                << it->first << std::endl
+                << "Profiler: " << info.mName << std::endl
                 << "\tFunction: " << info.mFunction << std::endl
                 << "\tNumber of calls: " << info.mCallsNum << std::endl
                 << "\tAverage time: " << info.mAllTime/info.mCallsNum
@@ -40,12 +42,12 @@ CProfilesCollector::~CProfilesCollector()
 }
 
 void CProfilesCollector::addResult(const char * id, const char * function,
-                                const tTime & time)
+                                   const char * name, const tTime & time)
 {
    auto it = mProfiles.find(id);
    if(it == mProfiles.end())
    {
-      Info info(function, time);
+      Info info(function, name, time);
       mProfiles.insert(std::pair<const char *, Info>(id, info));
       return;
    }

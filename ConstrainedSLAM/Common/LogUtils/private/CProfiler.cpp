@@ -5,9 +5,11 @@
 
 CProfilesCollector & CProfiler::sProfilesCollector = CProfilesCollector::getInstance();
 
-CProfiler::CProfiler(const char * file, const char * function) :
+CProfiler::CProfiler(const char * file, const char * function,
+                     const char * description) :
    mFile(file),
    mFunction(function),
+   mName(description),
    mStart(tClock::now())
 {
 }
@@ -19,5 +21,5 @@ CProfiler::~CProfiler()
    CProfilesCollector::tTimeAccuracy microseconds =
       boost::chrono::duration_cast<CProfilesCollector::tTimeAccuracy>(duration);
 
-   sProfilesCollector.addResult(mFile, mFunction, microseconds.count());
+   sProfilesCollector.addResult(mFile, mFunction, mName, microseconds.count());
 }

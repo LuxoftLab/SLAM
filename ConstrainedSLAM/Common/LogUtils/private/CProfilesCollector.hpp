@@ -14,12 +14,13 @@ public:
 private:
    struct Info {
       const char * mFunction;
+      const char * mName;
       tTime mCallsNum;
       tTime mAllTime;
       tTime mMaxTime;
       tTime mMinTime;
 
-      Info(const char * function, const tTime & time);
+      Info(const char * function, const char * name, const tTime & time);
    };
 
    std::map<const char *, Info> mProfiles;
@@ -33,7 +34,7 @@ public:
    static CProfilesCollector & getInstance();
 
    void addResult(const char * id, const char * function,
-                  const tTime & time);
+                  const char * name, const tTime & time);
 };
 
 #endif
