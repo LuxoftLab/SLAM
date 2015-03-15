@@ -56,7 +56,7 @@ tritset <_n>::~tritset()
 }
 
 template <int _n> 
-const tritset <_n>& tritset <_n>::operator=(const tritset <_n>& t) const
+const tritset <_n>& tritset <_n>::operator=(const tritset <_n>& t)
 {
 	delete[] data;
 	this->N = t.N;
@@ -109,8 +109,8 @@ const std::string tritset<_n>::toString() const
 	return s;
 }
 
-template <int _n> 
-bool operator== (const tritset <_n>& t1, const tritset <_n>& t2)
+template <int _m> 
+bool operator== (const tritset <_m>& t1, const tritset <_m>& t2)
 {
 	for (int i = 0; i < t1.N; i++)
 	{
@@ -120,8 +120,8 @@ bool operator== (const tritset <_n>& t1, const tritset <_n>& t2)
 	return true;
 }
 
-template <int _n> 
-bool operator< (const tritset <_n>& t1, const tritset <_n>& t2)
+template <int _m> 
+bool operator< (const tritset <_m>& t1, const tritset <_m>& t2)
 {
 
 	for (int i = 0; i < t1.N; i++)
@@ -134,15 +134,15 @@ bool operator< (const tritset <_n>& t1, const tritset <_n>& t2)
 	return false;
 }
 
-template <int _n> 
-std::ostream& operator<< (std::ostream &output, const tritset<_n>& t)
+template <int _m> 
+std::ostream& operator<< (std::ostream &output, const tritset<_m>& t)
 {
 	output << t.toString();
 	return output;
 }
 
-template <int _n> 
-std::istream& operator>> (std::istream &input, tritset <_n>& t)
+template <int _m> 
+std::istream& operator>> (std::istream &input, tritset <_m>& t)
 {
 	std::string s;
 	input >> s;

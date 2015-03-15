@@ -25,21 +25,21 @@ private:
 	int N;
 public:
 	tritset();
-	explicit tritset(const tritset& t);
+	tritset(const tritset& t);
 	~tritset();
 	int get(int idx) const;
 	bool set(int idx, int v);
 	tritref operator[](int idx);
-	const tritset <_n>& operator=(const tritset <_n>& t) const;
+	const tritset <_n>& operator=(const tritset <_n>& t);
 	const std::string toString() const;
-	template <int _n> 
-	friend bool operator== (const tritset<_n>& t1, const tritset<_n>& t2);
-	template <int _n> 
-	friend bool operator< (const tritset<_n>& t1, const tritset<_n>& t2);
-	template <int _n> 
-	friend std::ostream& operator << (std::ostream &output, const tritset<_n>& t);
-	template <int _n> 
-	friend std::istream& operator >> (std::istream &input, tritset<_n>& t);
+	template <int _m> 
+	friend bool operator== (const tritset<_m>& t1, const tritset<_m>& t2);
+	template <int _m> 
+	friend bool operator< (const tritset<_m>& t1, const tritset<_m>& t2);
+	template <int _m> 
+	friend std::ostream& operator << (std::ostream &output, const tritset<_m>& t);
+	template <int _m> 
+	friend std::istream& operator >> (std::istream &input, tritset<_m>& t);
 };
 
 #include "tritset.cpp"
