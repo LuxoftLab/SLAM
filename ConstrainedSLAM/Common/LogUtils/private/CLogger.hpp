@@ -14,9 +14,14 @@ enum logLevel
 
 enum output
 {
-    OFF,
-    TO_CONSOLE,
-    TO_FILE
+   TO_CONSOLE,
+   TO_FILE
+};
+
+enum mode
+{
+   OFF,
+   ON
 };
 
 class CLogger
@@ -25,11 +30,10 @@ public:
    static CLogger& getInstance();
    void config(const unsigned int configParam);
    void setDetalizationLevel(const unsigned int level);
-   void log(const unsigned int level, const std::string& message);
-   void log(const unsigned int level, const int message);
-   void log(const unsigned int level, const long long message);
-   void log(const unsigned int level, const float message);
-   void log(const unsigned int level, const double message);
+   void setMode(const unsigned int mode);
+   int getLogLevel();
+   bool getMode();
+   std::ostream& write(unsigned int level);
    ~CLogger();
 
 private:
@@ -37,10 +41,11 @@ private:
    CLogger(CLogger const&);
    void operator = (CLogger const&);
 
-   std::ostream* logStream;
-   std::ofstream fileStream;
-   unsigned int currentLogLevel;
    const std::string toString(const unsigned int level);
+   std::ostream* logStream;
+   unsigned int currentLogLevel;
+   std::ofstream fileStream;
+   bool isEnabled;
 
 };
 

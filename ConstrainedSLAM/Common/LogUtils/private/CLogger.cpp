@@ -1,9 +1,10 @@
 #include "CLogger.hpp"
 
 CLogger::CLogger():logStream(NULL),
-                    currentLogLevel(ERROR)
+                   currentLogLevel(ERROR),
+                   isEnabled(0)
 {
-    fileStream.open("CVNAR_LOG.txt");
+   fileStream.open("CVNAR_LOG.txt");
 }
 
 CLogger &CLogger::getInstance()
@@ -14,17 +15,7 @@ CLogger &CLogger::getInstance()
 
 void CLogger::config(const unsigned int configParam)
 {
-    switch (configParam){
-        case OFF:
-            this->logStream = NULL;
-        break;
-        case TO_CONSOLE:
-            this->logStream = &std::cout;
-        break;
-        case TO_FILE:
-            this->logStream = &fileStream;
-        break;
-    }
+   configParam ? this->logStream = &fileStream : this->logStream = &std::cout;
 }
 
 void CLogger::setDetalizationLevel(const unsigned int level)
@@ -32,78 +23,43 @@ void CLogger::setDetalizationLevel(const unsigned int level)
    this->currentLogLevel = level;
 }
 
-void CLogger::log(const unsigned int level, const std::string& message)
+void CLogger::setMode(const unsigned int mode)
 {
-   if (logStream != NULL &&
-       level <= currentLogLevel)
-   {
-      *logStream << "["
-                 << toString(level)
-                 << "]: "
-                 << message
-                 << std::endl;
-   }
+   this->isEnabled = mode;
 }
 
-void CLogger::log(const unsigned int level, const int message)
+int CLogger::getLogLevel()
 {
-   if (logStream != NULL &&
-       level >= currentLogLevel)
-   {
-      *logStream << "["
-                 << toString(level)
-                 << "]: "
-                 << message
-                 << std::endl;
-   }
+   return this->currentLogLevel;
 }
 
-void CLogger::log(const unsigned int level, const long long message)
+bool CLogger::getMode()
 {
-   if (logStream != NULL &&
-       level >= currentLogLevel)
-   {
-      *logStream << "["
-                 << toString(level)
-                 << "]: "
-                 << message
-                 << std::endl;
-   }
+   return this ->isEnabled;
 }
 
-void CLogger::log(const unsigned int level, const float message)
-{
-   if (logStream != NULL &&
-       level >= currentLogLevel)
-   {
-      *logStream << "["
-                 << toString(level)
-                 << "]: "
-                 << message
-                 << std::endl;
-   }
+CLogger::~CLogger(){
+   if (this->fileStream.is_open())
+      this->fileStream.close();
 }
 
-void CLogger::log(const unsigned int level, const double message)
+std::ostream& CLogger::write(unsigned int level)
 {
-   if (logStream != NULL &&
-       level >= currentLogLevel)
-   {
-      *logStream << "["
-                 << toString(level)
-                 << "]: "
-                 << message
-                 << std::endl;
-   }
+   if(logStream != NULL)
+      if (level == ERROR ||
+          (level <= currentLogLevel &&
+           isEnabled))
+      {
+         *logStream << "["
+                    << toString(level)
+                    << "]: ";
+
+      }
+   return *logStream;
 }
 
 const std::string CLogger::toString(const unsigned int level)
 {
-   const char* const buffer[] = {"ERROR", "WARNING","MESSAGE"};
+   static const char* const buffer[] = {"ERROR", "WARNING","MESSAGE"};
    return buffer[level];
-}
-
-CLogger::~CLogger(){
-    if (this->fileStream.is_open())
-       this->fileStream.close();
 }

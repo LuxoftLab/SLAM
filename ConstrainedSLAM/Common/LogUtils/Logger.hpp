@@ -1,14 +1,15 @@
-#ifndef MAKROS_HPP
-#define MAKROS_HPP
+#ifndef LOGGER_HPP
+#define LOGGER_HPP
 
-#include "private/CLogger.hpp"
+#include "Private/CLogger.hpp"
 
-#define CVNAR_LOGGER_START                      CLogger& i = CLogger::getInstance();
-#define CVNAR_LOGGER_CONF(CONF_PARAM)           i.config(CONF_PARAM);
+#define CVNAR_LOGGER_INIT                       CLogger& i = CLogger::getInstance();
+#define CVNAR_LOGGER_SET(MODE)                  i.setMode(MODE);
+#define CVNAR_LOGGER_OUTPUT(CONF_PARAM)         i.config(CONF_PARAM);
 #define CVNAR_LOG_ERROR                         i.setDetalizationLevel(ERROR);
 #define CVNAR_LOG_WARNING                       i.setDetalizationLevel(WARNING);
 #define CVNAR_LOG_MESSAGE                       i.setDetalizationLevel(MESSAGE);
-#define CVNAR_LOGGER_WRITE(PRIORITY, MESSAGE)   i.log(PRIORITY, MESSAGE);
-
-#endif // MAKROS_HPP
+#define CVNAR_LOG_WRITE(PRIORITY)               if ((PRIORITY > i.getLogLevel()) || (i.getMode() == OFF && PRIORITY != ERROR)) ; \
+                                                else i.write(PRIORITY)
+#endif // LOGGER_HPP
 
