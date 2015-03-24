@@ -14,6 +14,7 @@ CPointTracker::CPointTracker(const int framesNumber, const size_t minPoints,
    mNextId(0),
    mTracker(new CLKTracker(maxPoints))
 {
+
 }
 
 void CPointTracker::processFrame(const cv::Mat & img, const cv::Mat & grayImg,
