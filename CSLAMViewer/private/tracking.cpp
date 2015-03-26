@@ -10,7 +10,7 @@
 
 
 int main() {
-   cv::VideoCapture capture("/home/gorz/VID_20150114_111402.mp4");
+   cv::VideoCapture capture("/home/getupandgo/Downloads/quadro.mp4");
    if(!capture.isOpened()) {
       return 1;
    }

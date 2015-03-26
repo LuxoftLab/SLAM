@@ -3,6 +3,7 @@
 
 #include "PointTracker/CPointTracker.hpp"
 #include "PointTracker/Tracker/CLKTracker.hpp"
+#include "PointTracker/Tracker/CSteinTracker.hpp"
 
 #include "Common/LogUtils/CProfiler.hpp"
 
@@ -12,7 +13,7 @@ CPointTracker::CPointTracker(const int framesNumber, const size_t minPoints,
    mMinPoints(minPoints),
    mFrameNumber(0),
    mNextId(0),
-   mTracker(new CLKTracker(maxPoints))
+   mTracker(new CSteinTracker())
 {
 
 }

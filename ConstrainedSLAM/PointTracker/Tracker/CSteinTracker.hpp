@@ -34,7 +34,9 @@ public:
                                 std::vector<uchar>& status);
    void toSet();
 
-   CTritset<sLBP_TRIT_SZ> lbpFeature(const cv::Mat & img, const int64 x, const int64 y);
+   int isFeature(int elem, int sLBP_EPS, int p);
+
+   CTritset<sLBP_TRIT_SZ> lbpFeature(const cv::Mat & img, const long long x, const long long y);
 };
 
 #endif

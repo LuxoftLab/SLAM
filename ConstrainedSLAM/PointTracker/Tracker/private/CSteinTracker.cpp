@@ -4,7 +4,7 @@ CSteinTracker::CSteinTracker()
 {
 }
 
-int isFeature(int elem, int sLBP_EPS, int p)
+int CSteinTracker::isFeature(int elem, int sLBP_EPS, int p)
 {
     int resChar;
     if (p - elem > sLBP_EPS)
@@ -81,6 +81,7 @@ void CSteinTracker::setFirstFrame(const cv::Mat & img, const cv::Mat & grayImg,
 void CSteinTracker::findNewFeatures(const cv::Mat & img, const cv::Mat & grayImg,
                         std::vector<cv::Point2f>& features,
                         const std::vector<cv::Point2f>& old) {
+    std::cout<< "no findNewFeatures";
 
 }
 
@@ -88,7 +89,7 @@ void CSteinTracker::findNewFeaturesPosition(const cv::Mat & img,const cv::Mat & 
                                 const std::vector<cv::Point2f>& prevFeatures,
                                 std::vector<cv::Point2f>& features,
                                 std::vector<uchar>& status){
-
+  std::cout<< "no findNewFeaturesPosition";
     //TO DO second frame;
 
 }
