@@ -9,7 +9,7 @@
 #define CVNAR_LOG_ERROR                         i.setDetalizationLevel(ERROR);
 #define CVNAR_LOG_WARNING                       i.setDetalizationLevel(WARNING);
 #define CVNAR_LOG_MESSAGE                       i.setDetalizationLevel(MESSAGE);
-#define CVNAR_LOG_WRITE(PRIORITY)               if (PRIORITY < i.getLogLevel() || PRIORITY == ERROR) i.write(PRIORITY)
+#define CVNAR_LOG(PRIORITY)                     if (PRIORITY < i.getLogLevel() || PRIORITY == ERROR) i.write(PRIORITY)
 
 #endif // LOGGER_HPP
 
