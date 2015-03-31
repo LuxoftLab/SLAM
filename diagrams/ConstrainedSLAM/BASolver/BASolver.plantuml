@@ -1,0 +1,41 @@
+@startuml
+
+class BASolver
+
+abstract class AFunctor {
+	ceres::Problem &problem
+	{abstract} void bind(ceres::Problem)
+	void unbind()
+}
+
+BASolver "1" o-- "*" AFunctor
+
+class CDynamicCameraAndPoint 
+
+class CConstCamera
+
+class CConstPoint
+
+AFunctor <|-- CDynamicCameraAndPoint
+AFunctor <|-- CConstCamera
+AFunctor <|-- CConstPoint
+
+
+class CScene3D
+
+class CPoint3D {
+	double[3] position
+}
+
+class CCamera {
+	double[3] translation
+	double[4] rotation
+}
+
+CScene3D "1" o-- "*" CPoint3D
+CScene3D "1" o-- "*" CCamera
+
+AFunctor -- CPoint3D
+AFunctor -- CCamera
+
+@enduml
