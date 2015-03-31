@@ -2,8 +2,8 @@ add_library(Profiler private/CProfiler.cpp
                      private/CProfilesCollector.cpp
                      private/CProfilesCollector.hpp
                      CProfiler.hpp)
-add_library(Logger   private/CLogger.hpp
-                     private/CLogger.cpp
+add_library(Logger   private/CLogger.cpp
+                     private/CLogger.hpp
                      Logger.hpp)
 
 find_package(Boost COMPONENTS chrono system REQUIRED)

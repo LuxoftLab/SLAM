@@ -45,7 +45,7 @@ CLogger::~CLogger(){
 
 std::ostream& CLogger::write(unsigned int level)
 {
-   if(logStream != NULL)
+   if(logStream != NULL){
       if (level == ERROR ||
           (level <= currentLogLevel &&
            isEnabled))
@@ -55,6 +55,8 @@ std::ostream& CLogger::write(unsigned int level)
                     << "]: ";
 
       }
+   }
+   else std::cout << "error occured!";
    return *logStream;
 }
 
