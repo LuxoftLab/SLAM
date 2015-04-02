@@ -5,6 +5,9 @@
 #include <fstream>
 #include <iostream>
 
+#define OFF 0
+#define ON 1
+
 enum logLevel
 {
    ERROR,
@@ -18,19 +21,14 @@ enum output
    TO_FILE
 };
 
-enum mode
-{
-   OFF,
-   ON
-};
-
 class CLogger
 {
 public:
    static CLogger& getInstance();
-   void config(const unsigned int configParam);
+   void setOutput(const unsigned int configParam);
    void setDetalizationLevel(const unsigned int level);
    void setMode(const unsigned int mode);
+   void setLogFilePath(const std::string path);
    int getLogLevel();
    bool getMode();
    std::ostream& write(unsigned int level);
@@ -41,10 +39,12 @@ private:
    CLogger(CLogger const&);
    void operator = (CLogger const&);
 
-   const std::string toString(const unsigned int level);
+   std::ostream fakeStream;
    std::ostream* logStream;
-   unsigned int currentLogLevel;
    std::ofstream fileStream;
+   std::string filePath;
+   const char* toString(const unsigned int level);
+   unsigned int currentLogLevel;
    bool isEnabled;
 
 };
