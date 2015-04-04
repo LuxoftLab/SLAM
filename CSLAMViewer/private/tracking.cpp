@@ -8,8 +8,8 @@
 #include <PointTracker/CPointTracker.hpp>
 #include <Common/Common.hpp>
 
-
 int main() {
+
    cv::VideoCapture capture("/home/gorz/VID_20150114_111402.mp4");
    if(!capture.isOpened()) {
       return 1;
