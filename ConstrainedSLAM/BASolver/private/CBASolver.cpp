@@ -2,6 +2,8 @@
 #include "CBothMutable.hpp"
 #include "CConstCamera.hpp"
 
+#include "Common/LogUtils/CProfiler.hpp"
+
 CBASolver::CBASolver(int minFrames) :
    mFunctors(minFrames),
    mProblem(new ceres::Problem)
@@ -11,6 +13,7 @@ CBASolver::CBASolver(int minFrames) :
 
 void CBASolver::addFrame(const CFrame &frame)
 {
+   START_PROFILING("addFrame");
    tFunctorContainerPtr functors(new CFunctorContainer);
 
    CScene3D::tCameraPtr camera = mScene.createCamera();
@@ -18,6 +21,7 @@ void CBASolver::addFrame(const CFrame &frame)
    {
       CScene3D::tPointPtr point = mScene.getPoint(it->first);
       AFunctor * functor = new CBothMutable(point, camera, it->second);
+      functor->bind(mProblem);
       functors->add(functor);
    }
 
@@ -29,9 +33,12 @@ void CBASolver::addFrame(const CFrame &frame)
       first->changeAllToConstCamera();
 
 
-      ceres::Solver::Options options;
-      ceres::Solver::Summary summary;
-      ceres::Solve(options, mProblem.get(), &summary);
+      {
+         START_PROFILING("solving");
+         ceres::Solver::Options options;
+         ceres::Solver::Summary summary;
+         ceres::Solve(options, mProblem.get(), &summary);
+      }
    }
 }
 

@@ -9,6 +9,21 @@ AFunctor::AFunctor(const CScene3D::tPointPtr &point,
    mPoint2D(point2D),
    mId(NULL)
 {
+   mCalibration[0][0] = -500;
+   mCalibration[0][1] = 0;
+   mCalibration[0][2] = 300;
+   mCalibration[0][3] = 0;
+
+   mCalibration[1][0] = 0;
+   mCalibration[1][1] = 500;
+   mCalibration[1][2] = 300;
+   mCalibration[1][3] = 0;
+
+   mCalibration[2][0] = 0;
+   mCalibration[2][1] = 0;
+   mCalibration[2][2] = 1;
+   mCalibration[2][3] = 0;
+
 }
 
 AFunctor::AFunctor(const AFunctor *functor) :

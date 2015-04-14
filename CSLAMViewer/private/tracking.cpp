@@ -7,7 +7,7 @@
 #include <list>
 #include <PointTracker/CPointTracker.hpp>
 #include <Common/Common.hpp>
-
+#include "BASolver/CBASolver.hpp"
 int main() {
 
    cv::VideoCapture capture("/home/gorz/VID_20150114_111402.mp4");
@@ -16,16 +16,18 @@ int main() {
    }
    cv::Mat frame, grayFrame;
    CPointTracker tracker(10, 49, 50);
+   CBASolver solver(5);
    SensorData s;
    const IPointTracker::tPointTracks & tracks = tracker.getTracks();
-   for(int i = 0; i < 3 && capture.grab(); i++)
+   const IPointTracker::tFrames & frames = tracker.getFrames();
+   for(int i = 0; i < 10 && capture.grab(); i++)
    //while(capture.grab())
    {
       capture.retrieve(frame);
       cv::resize(frame, frame, cv::Size(800, 600));
       cv::cvtColor(frame, grayFrame, CV_BGR2GRAY);
       tracker.processFrame(frame, grayFrame, s);
-
+      solver.addFrame(*frames.back());
       std::cout << "found tracks: " << tracks.size() << std::endl;
 //      for(auto it = tracks.begin(); it != tracks.end(); it++)
 //      {

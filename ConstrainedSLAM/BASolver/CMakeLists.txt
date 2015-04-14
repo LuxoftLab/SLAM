@@ -12,3 +12,4 @@ add_library(BASolver IBASolver.hpp CBASolver.hpp
 
 target_link_libraries(BASolver LINK_PUBLIC ceres)
 target_link_libraries(BASolver Scene3D)
+target_link_libraries(BASolver Logger)
