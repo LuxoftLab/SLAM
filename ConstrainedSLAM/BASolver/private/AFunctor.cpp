@@ -2,10 +2,17 @@
 #include "Common/LogUtils/Logger.hpp"
 
 AFunctor::AFunctor(const CScene3D::tPointPtr &point,
-                   const CScene3D::tCameraPtr &camera) :
+                   const CScene3D::tCameraPtr &camera,
+                   const PointTrack::tPoint2fPtr &point2D) :
    mPoint(point),
    mCamera(camera),
+   mPoint2D(point2D),
    mId(NULL)
+{
+}
+
+AFunctor::AFunctor(const AFunctor *functor) :
+   AFunctor(functor->mPoint, functor->mCamera, functor->mPoint2D)
 {
 }
 
@@ -28,5 +35,10 @@ void AFunctor::unbind()
       CVNAR_LOGGER_INIT;
       CVNAR_LOG(ERROR) << "Functor already unbind";
    }
+}
+
+const AFunctor::tProblemPtr & AFunctor::getProblem()
+{
+   return mProblem;
 }
 

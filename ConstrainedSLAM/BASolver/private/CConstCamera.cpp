@@ -1,6 +1,6 @@
-#include "CBothMutable.hpp"
+#include "CConstCamera.hpp"
 
-CBothMutable::CBothMutable(const CScene3D::tPointPtr &point,
+CConstCamera::CConstCamera(const CScene3D::tPointPtr &point,
                            const CScene3D::tCameraPtr &camera,
                            const PointTrack::tPoint2fPtr & point2D) :
    AFunctor(point, camera, point2D)
@@ -8,11 +8,16 @@ CBothMutable::CBothMutable(const CScene3D::tPointPtr &point,
 
 }
 
+CConstCamera::CConstCamera(const AFunctor *functor) :
+   AFunctor(functor)
+{
+
+}
+
 ceres::ResidualBlockId
-CBothMutable::bindToProblem(const tProblemPtr &problem)
+CConstCamera::bindToProblem(const tProblemPtr &problem)
 {
    //function will be delited by ceres::problem
    tCostFunction * function = new tCostFunction(this);
-   return problem->AddResidualBlock(function, NULL, mCamera->rotation,
-                                    mCamera->position, mPoint->position);
+   return problem->AddResidualBlock(function, NULL, mPoint->position);
 }

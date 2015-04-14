@@ -9,7 +9,8 @@ private:
 
 public:
    CBothMutable(const CScene3D::tPointPtr & point,
-                const CScene3D::tCameraPtr & camera);
+                const CScene3D::tCameraPtr & camera,
+                const PointTrack::tPoint2fPtr & point2D);
 
    ceres::ResidualBlockId bindToProblem(const tProblemPtr & problem);
 
@@ -17,6 +18,8 @@ public:
    bool operator()(const T * rotation, const T * translation,
                    const T * position, T * residuals) const
    {
+      T x;
+      T y;
       return true;
    }
 };

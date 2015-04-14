@@ -12,6 +12,7 @@ public:
    ~CFunctorContainer();
 
    void add(AFunctor * functor);
+   void changeAllToConstCamera();
 };
 
 #endif // CFUNCTOR_CONTAINER_HPP
