@@ -1,4 +1,3 @@
-
 #include <iostream>
 
 #include "PointTracker/CPointTracker.hpp"
