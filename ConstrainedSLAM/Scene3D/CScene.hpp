@@ -5,12 +5,12 @@
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/io.hpp>
 
-using namespace boost::numeric::ublas;
-
 class Visualiser{
 public:
+   typedef boost::numeric::ublas::matrix <double> tMatrixDouble;
+
    static Visualiser& getInstance();
-   matrix <double> quaternionToMatrix(double quaternion[]);
+   tMatrixDouble quaternionToMatrix(double quaternion[]);
    void drawCamera(double quaternion[], double position[]);
    void drawPoint(double center[]);
 
@@ -20,8 +20,6 @@ private:
    void operator = (Visualiser const&);
 
    ~Visualiser();
-
-   matrix <double> rotationMatrix;
 
    std::fstream fileStream;
 

@@ -7,7 +7,6 @@ Visualiser::Visualiser() : vertexes (0)
    fileStream.precision();
    fileStream.setf(std::ios::fixed, std::ios::floatfield);
 
-   rotationMatrix.resize(3,3);
 }
 
 Visualiser& Visualiser::getInstance()
@@ -16,60 +15,59 @@ Visualiser& Visualiser::getInstance()
    return instance;
 }
 
-matrix <double> Visualiser::quaternionToMatrix(double quaternion[])
+Visualiser::tMatrixDouble Visualiser::quaternionToMatrix(double quaternion[])
 {
-    double x, y, z, w;
-    double x2, y2, z2;
-    double wx, wy, wz;
-    double xx, xy, xz;
-    double yy, yz;
-    double zz;
+   tMatrixDouble rotationMatrix(3,3);
 
-    x = quaternion[0];
-    y = quaternion[1];
-    z = quaternion[2];
-    w = quaternion[3];
+   double x, y, z, w;
+   double x2, y2, z2;
+   double wx, wy, wz;
+   double xx, xy, xz;
+   double yy, yz;
+   double zz;
 
-    double s = 2.0f / (x * x + y * y + z * z + w * w);
+   x = quaternion[0];
+   y = quaternion[1];
+   z = quaternion[2];
+   w = quaternion[3];
 
-    x2 = x * s;
-    y2 = y * s;
-    z2 = z * s;
+   double s = 2.0f / (x * x + y * y + z * z + w * w);
 
-    xx = x * x2;
-    xy = x * y2;
-    xz = x * z2;
+   x2 = x * s;
+   y2 = y * s;
+   z2 = z * s;
 
-    yy = y * y2;
-    yz = y * z2;
+   xx = x * x2;
+   xy = x * y2;
+   xz = x * z2;
 
-    zz = z * z2;
+   yy = y * y2;
+   yz = y * z2;
 
-    wx = w * x2;
-    wy = w * y2;
-    wz = w * z2;
+   zz = z * z2;
 
-    rotationMatrix(0,0) = 1.0f - (yy + zz);
-    rotationMatrix(1,0) = xy - wz;
-    rotationMatrix(2,0) = xz + wy;
+   wx = w * x2;
+   wy = w * y2;
+   wz = w * z2;
 
-    rotationMatrix(0,1) = xy + wz;
-    rotationMatrix(1,1) = 1.0f - (xx + zz);
-    rotationMatrix(2,1) = yz - wx;
+   rotationMatrix(0,0) = 1.0f - (yy + zz);
+   rotationMatrix(1,0) = xy - wz;
+   rotationMatrix(2,0) = xz + wy;
 
-    rotationMatrix(0,2) = xz - wy;
-    rotationMatrix(1,2) = yz + wx;
-    rotationMatrix(2,2) = 1.0f - (xx + yy);
+   rotationMatrix(0,1) = xy + wz;
+   rotationMatrix(1,1) = 1.0f - (xx + zz);
+   rotationMatrix(2,1) = yz - wx;
+
+   rotationMatrix(0,2) = xz - wy;
+   rotationMatrix(1,2) = yz + wx;
+   rotationMatrix(2,2) = 1.0f - (xx + yy);
 
    return rotationMatrix;
 }
 
 void Visualiser::drawCamera(double quaternion[], double position[])
 {
-
-   matrix <double> camera;
-
-   camera.resize(5,3);
+   tMatrixDouble camera(5,3);
 
    camera(0,0) = -0.5 + position[0];
    camera(0,1) = -0.5 + position[1];
