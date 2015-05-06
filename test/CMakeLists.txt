@@ -12,5 +12,5 @@ ADD_EXECUTABLE(simpleSba simpleSBA.cpp matrices.h)
 TARGET_LINK_LIBRARIES(simpleSba LINK_PUBLIC ceres)
 target_link_libraries(simpleSba ${OpenCV_LIBS})
 
-ADD_EXECUTABLE(destructorTest destructorTest.cpp)
-TARGET_LINK_LIBRARIES(destructorTest LINK_PUBLIC ceres)
+#ADD_EXECUTABLE(destructorTest destructorTest.cpp)
+#TARGET_LINK_LIBRARIES(destructorTest LINK_PUBLIC ceres)
