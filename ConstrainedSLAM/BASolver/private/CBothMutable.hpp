@@ -2,6 +2,7 @@
 #define CBOTH_MUTABEL_HPP
 
 #include "AFunctor.hpp"
+#include "Common/LogUtils/CProfiler.hpp"
 
 class CBothMutable : public AFunctor {
 private:
@@ -18,11 +19,12 @@ public:
    bool operator()(const T * _rotation, const T * translation,
                    const T * position, T * residuals) const
    {
+      START_PROFILING("both mutable functor");
       T rotation[4][4];
       quaternionToMatrix<T>(_rotation, rotation);
-      T x = ((T(mCalibration[0][0])) * (rotation[0][0]) + (T(mCalibration[0][2])) * (rotation[2][0])) * (position[0]) + ((T(mCalibration[0][0])) * (rotation[0][1]) + (T(mCalibration[0][2])) * (rotation[2][1])) * (position[1]) + ((T(mCalibration[0][0])) * (rotation[0][2]) + (T(mCalibration[0][2])) * (rotation[2][2])) * (position[2]) + (T(mCalibration[0][0])) * ((rotation[0][0]) * (translation[0]) + (rotation[0][1]) * (translation[1]) + (rotation[0][2]) * (translation[2])) + (T(mCalibration[0][2])) * ((rotation[2][0]) * (translation[0]) + (rotation[2][1]) * (translation[1]) + (rotation[2][2]) * (translation[2]));
-      T y = ((T(mCalibration[1][1])) * (rotation[1][0]) + (T(mCalibration[1][2])) * (rotation[2][0])) * (position[0]) + ((T(mCalibration[1][1])) * (rotation[1][1]) + (T(mCalibration[1][2])) * (rotation[2][1])) * (position[1]) + ((T(mCalibration[1][1])) * (rotation[1][2]) + (T(mCalibration[1][2])) * (rotation[2][2])) * (position[2]) + (T(mCalibration[1][1])) * ((rotation[1][0]) * (translation[0]) + (rotation[1][1]) * (translation[1]) + (rotation[1][2]) * (translation[2])) + (T(mCalibration[1][2])) * ((rotation[2][0]) * (translation[0]) + (rotation[2][1]) * (translation[1]) + (rotation[2][2]) * (translation[2]));
-      T t = ((T(mCalibration[2][2])) * (rotation[2][0])) * (position[0]) + ((T(mCalibration[2][2])) * (rotation[2][1])) * (position[1]) + ((T(mCalibration[2][2])) * (rotation[2][2])) * (position[2]) + (T(mCalibration[2][2])) * ((rotation[2][0]) * (translation[0]) + (rotation[2][1]) * (translation[1]) + (rotation[2][2]) * (translation[2]));
+      T x(((T(mCalibration[0][0])) * (rotation[0][0]) + (T(mCalibration[0][2])) * (rotation[2][0])) * (position[0]) + ((T(mCalibration[0][0])) * (rotation[0][1]) + (T(mCalibration[0][2])) * (rotation[2][1])) * (position[1]) + ((T(mCalibration[0][0])) * (rotation[0][2]) + (T(mCalibration[0][2])) * (rotation[2][2])) * (position[2]) + (T(mCalibration[0][0])) * ((rotation[0][0]) * (translation[0]) + (rotation[0][1]) * (translation[1]) + (rotation[0][2]) * (translation[2])) + (T(mCalibration[0][2])) * ((rotation[2][0]) * (translation[0]) + (rotation[2][1]) * (translation[1]) + (rotation[2][2]) * (translation[2])));
+      T y(((T(mCalibration[1][1])) * (rotation[1][0]) + (T(mCalibration[1][2])) * (rotation[2][0])) * (position[0]) + ((T(mCalibration[1][1])) * (rotation[1][1]) + (T(mCalibration[1][2])) * (rotation[2][1])) * (position[1]) + ((T(mCalibration[1][1])) * (rotation[1][2]) + (T(mCalibration[1][2])) * (rotation[2][2])) * (position[2]) + (T(mCalibration[1][1])) * ((rotation[1][0]) * (translation[0]) + (rotation[1][1]) * (translation[1]) + (rotation[1][2]) * (translation[2])) + (T(mCalibration[1][2])) * ((rotation[2][0]) * (translation[0]) + (rotation[2][1]) * (translation[1]) + (rotation[2][2]) * (translation[2])));
+      T t(((T(mCalibration[2][2])) * (rotation[2][0])) * (position[0]) + ((T(mCalibration[2][2])) * (rotation[2][1])) * (position[1]) + ((T(mCalibration[2][2])) * (rotation[2][2])) * (position[2]) + (T(mCalibration[2][2])) * ((rotation[2][0]) * (translation[0]) + (rotation[2][1]) * (translation[1]) + (rotation[2][2]) * (translation[2])));
       if(t == T(0))
       {
          residuals[0] = residuals[1] = T(0);

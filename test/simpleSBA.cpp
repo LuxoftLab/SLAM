@@ -10,6 +10,7 @@
 #include <ceres/ceres.h>
 
 #include "matrices.h"
+#include "Common/LogUtils/CProfiler.hpp"
 
 
 struct Functor {
@@ -23,6 +24,8 @@ struct Functor {
 
    template<typename T>
    bool operator()(T const * r, T const * t, T const * p, T* residuals) const {
+
+      START_PROFILING("functor");
       matrix<T> rotation = getRotationMatrix<T>(r[0], r[1], r[2]);
       matrix<T> transition = getTranslationMatrix<T>(t[0], t[1], t[2]);
       matrix<T> point2d = get2DPointMatrix<T>(rotation, transition, get3DPointMatrix<T>(p[0], p[1], p[2]));
@@ -50,6 +53,8 @@ struct ConstCamera {
 
    template<typename T>
    bool operator()(T const * p, T* residuals) const {
+
+      START_PROFILING("const camera");
       matrix<T> rotation = getRotationMatrix<T>(T(0), T(0), T(0));
       matrix<T> transition = getTranslationMatrix<T>(T(0), T(0), T(0));
       matrix<T> point2d = get2DPointMatrix<T>(rotation, transition, get3DPointMatrix<T>(p[0], p[1], p[2]));
@@ -121,12 +126,14 @@ int main()
 
 
    }
-std::cout << "Solving..." << std::endl;
+   std::cout << "Solving..." << std::endl;
    ceres::Solver::Options options;
   // options.minimizer_progress_to_stdout = true;
    ceres::Solver::Summary summary;
-   ceres::Solve(options, &problem, &summary);
-
+   {
+      START_PROFILING("solving");
+      ceres::Solve(options, &problem, &summary);
+   }
    std::cout << "Solved" << std::endl;
    for(int f = 0; f < nFrames; f++)
    {

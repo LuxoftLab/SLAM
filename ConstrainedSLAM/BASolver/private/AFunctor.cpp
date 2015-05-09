@@ -43,12 +43,12 @@ void AFunctor::bind(const tProblemPtr & problem)
 
 void AFunctor::unbind()
 {
+   CVNAR_LOGGER_INIT;
    if(mId != NULL) {
       mProblem->RemoveResidualBlock(mId);
       mId = NULL;
    } else {
-      CVNAR_LOGGER_INIT;
-      CVNAR_LOG(ERROR) << "Functor already unbind";
+      CVNAR_LOG(ERROR) << "Functor already unbind\n";
    }
 }
 

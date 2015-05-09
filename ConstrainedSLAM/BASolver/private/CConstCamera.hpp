@@ -2,6 +2,7 @@
 #define CCONST_CAMERA_HPP
 
 #include "AFunctor.hpp"
+#include "Common/LogUtils/CProfiler.hpp"
 
 class CConstCamera : public AFunctor {
 private:
@@ -18,6 +19,8 @@ public:
    template<typename T>
    bool operator()(const T * position, T * residuals) const
    {
+
+      START_PROFILING("const camera functor");
       T rotation[4][4];
       T translation[] = {T(mCamera->position[0]), T(mCamera->position[1]),
                         T(mCamera->position[2])};

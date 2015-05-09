@@ -10,6 +10,7 @@ target_link_libraries(fundamentalMatrix PointTracker)
 
 ADD_EXECUTABLE(simpleSba simpleSBA.cpp matrices.h)
 TARGET_LINK_LIBRARIES(simpleSba LINK_PUBLIC ceres)
+TARGET_LINK_LIBRARIES(simpleSba Profiler)
 target_link_libraries(simpleSba ${OpenCV_LIBS})
 
 ADD_EXECUTABLE(destructorTest destructorTest.cpp)

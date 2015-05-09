@@ -20,7 +20,7 @@ int main() {
    SensorData s;
    const IPointTracker::tPointTracks & tracks = tracker.getTracks();
    const IPointTracker::tFrames & frames = tracker.getFrames();
-   for(int i = 0; i < 10 && capture.grab(); i++)
+   for(int i = 0; i < 5 && capture.grab(); i++)
    //while(capture.grab())
    {
       capture.retrieve(frame);
