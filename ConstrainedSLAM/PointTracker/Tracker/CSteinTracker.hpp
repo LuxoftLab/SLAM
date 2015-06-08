@@ -4,6 +4,7 @@
 #include <map>
 #include <set>
 #include <vector>
+#include <algorithm>
 #include <boost/shared_ptr.hpp>
 #include "ITracker.hpp"
 #include "private/COpticalFlowFeatureExtractor.hpp"
@@ -11,19 +12,22 @@
 
 class CSteinTracker : public ITracker {
 
-    static const int sLBP_TRIT_SZ = 16;
-    static const int sLBP_LENS = 5;
+    static const int sLBP_TRIT_SZ = 16; //feature length
+    static const int sLBP_LENS = 5; //square side length around the feature
     static const int sLBP_EPS = 10;
-    static const int sTO_SET = 20;
-    int frameCounter = 0;
+    static const int sTO_SET = 10;
+    static const int sMDP = 8; //max_discriminative_power, depends on sLBP_TRIT_SZ
+    int frameCounter = 1;
 
 public:
-   CSteinTracker();
-   std::map<CTritset, std::vector<cv::Point2f> > featuresMap;
-   std::map<CTritset, std::vector<cv::Point2f> > featuresMapTemp;
-   std::vector<cv::Point2f> hypoCor;
-   std::vector<uchar> featuresStatus;
-   std::set <CTritset> featuresSet;
+   CSteinTracker(const int maxPoints);
+   std::map<CTritset, std::vector<cv::Point2f> > gTablePrevFrame;
+   std::map<CTritset, std::vector<cv::Point2f> > gTableCurrFrame;
+   std::vector<cv::Point2f> gFeaturesFoundInTables;
+   std::vector<cv::Point2f> gCorrespondenceHypotheses;
+   std::vector<cv::Point2f> gFeatures2FramesAgo;
+   std::vector<uchar> gFeaturesStatus;
+   std::set <CTritset> gListOfCandidates;
 
    void setFirstFrame(const cv::Mat & img, const cv::Mat & grayImg,
                       std::vector<cv::Point2f> & features);
@@ -36,10 +40,12 @@ public:
                                 const std::vector<cv::Point2f>& prevFeatures,
                                 std::vector<cv::Point2f>& features,
                                 std::vector<uchar>& status);
-   void toSet();
+   void makeCandidatesList();
 
-   void compareMaps(std::map<CTritset, std::vector<cv::Point2f> > &m1,
-                    std::map<CTritset, std::vector<cv::Point2f> > &m2);
+   void compareSignatures(const cv::Mat & img,const cv::Mat & grayImg,
+                          std::map<CTritset, std::vector<cv::Point2f> > &m1,
+                          std::map<CTritset, std::vector<cv::Point2f> > &m2,
+                          const std::vector<cv::Point2f>& prevFeatures);
 
    int isFeature(int elem, int sLBP_EPS, int p);
 

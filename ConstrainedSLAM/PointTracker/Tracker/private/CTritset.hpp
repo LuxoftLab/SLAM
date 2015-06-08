@@ -24,6 +24,7 @@ private:
     unsigned long long *data;
     int N;
     int sLBP_LENS;
+    static int pow3[5];
 public:
     CTritset(int sLBP_L);
     CTritset(const CTritset& t);

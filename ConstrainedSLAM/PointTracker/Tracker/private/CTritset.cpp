@@ -1,5 +1,7 @@
 #include "PointTracker/Tracker/private/CTritset.hpp"
 
+int CTritset::pow3[] = {1, 3, 9, 27, 81};
+
 CTritset::CTritref::CTritref(CTritset *p, int idx)
     : parent(p), index(idx) {}
 
@@ -27,8 +29,8 @@ const CTritset::CTritref& CTritset::CTritref
 CTritset::CTritset(int sLBP_L)
     : sLBP_LENS(sLBP_L)
 {
-    N = sLBP_LENS / 32;
-    if (sLBP_LENS % 32)
+    N = sLBP_LENS / 40;
+    if (sLBP_LENS % 40)
         N++;
     data = new unsigned long long[N];
     for (int i = 0; i < N; i++)
@@ -37,6 +39,7 @@ CTritset::CTritset(int sLBP_L)
 
 CTritset::CTritset(const CTritset& t)
 {
+    sLBP_LENS = t.sLBP_LENS;
     N = t.N;
     data = new unsigned long long[N];
     for (int i = 0; i < N; i++)
@@ -53,6 +56,7 @@ const CTritset& CTritset::operator=(const CTritset& t)
 {
     delete[] data;
     this->N = t.N;
+    this->sLBP_LENS = t.sLBP_LENS;
     data = new unsigned long long[this->N];
     for (int i = 0; i < this->N; i++)
         this->data[i] = t.data[i];
@@ -61,24 +65,26 @@ const CTritset& CTritset::operator=(const CTritset& t)
 
 int CTritset::get(int idx) const
 {
-    idx = sLBP_LENS - idx - 1;
     if (idx > sLBP_LENS-1 || idx < 0)
         return -1;
-    int block = idx / 32;
-    idx %= 32;
-    return 3 & (data[block] >> (64 - (idx + 1) * 2));
+    int block = idx / 40;
+    idx %= 40;
+    int offset = idx / 5 * 8;
+    idx %= 5;
+    return ((255 & (data[block] >> offset)) / pow3[idx]) % 3;
 }
 
 bool CTritset::set(int idx, int v)
 {
-    idx = sLBP_LENS - idx - 1;
     if (idx > sLBP_LENS - 1 || idx < 0 || v < 0 || v > 2)
         return false;
-    int block = idx / 32;
-    idx %= 32;
-    data[block] &= ULLONG_MAX - (1ull << (64 - idx * 2 - 1))
-                    - (1ull << (64 - idx * 2 - 2));
-    data[block] |= ((1ull * v) << (64 - (idx + 1) * 2));
+    int block = idx / 40;
+    idx %= 40;
+    int offset = idx / 5 * 8;
+    idx %= 5;
+    int last_v = ((255 & (data[block] >> offset)) / pow3[idx]) % 3;
+    int delta = (v - last_v) * pow3[idx];
+    data[block] += 1ll*delta << offset;
     return true;
 }
 
