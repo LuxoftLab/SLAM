@@ -1,6 +1,9 @@
 #include "PointTracker/Tracker/CSteinTracker.hpp"
 #include <cmath>
 
+#define DEBUG(v) std::cout << #v << " " << v << "\n";
+#define MSG(v) std::cout << v << "\n";
+
 CSteinTracker::CSteinTracker(const int maxPoints)
 {
 }
@@ -14,56 +17,122 @@ bool cmp (cv::Point2f p1, cv::Point2f p2) {
 void CSteinTracker::compareSignatures(const cv::Mat & img, const cv::Mat & grayImg,
                                       std::map<CTritset, std::vector<cv::Point2f> > & tablePrevFrame,
                                       std::map<CTritset, std::vector<cv::Point2f> > & tableCurrFrame,
-                                      const std::vector<cv::Point2f> &prevFeatures)
+                                      const std::vector<cv::Point2f> &prevFeatures,
+                                      std::vector<cv::Point2f> &features)
 {
-    gFeaturesFoundInTables.clear();
+    MSG("compareSignatures start");
     gFeaturesStatus.clear();
-    gCorrespondenceHypotheses.clear();
-    gFeatures2FramesAgo.clear();
-
-    int sumSize = 0;
-
-    for(std::map<CTritset, std::vector<cv::Point2f> >::iterator iterTablePrevFrame = tablePrevFrame.begin();
-        iterTablePrevFrame != tablePrevFrame.end(); ++iterTablePrevFrame)
+    std::vector <CTritset> tritsetCur;
+    std::map<CTritset, std::vector<cv::Point2f> >::iterator iterTablePrev, iterTableCurr;
+    DEBUG(gTritsetPrev.size());
+    DEBUG(prevFeatures.size());
+    int sz = gTritsetPrev.size();
+    for(int i = 0; i < sz; i++)
     {
-        sumSize += iterTablePrevFrame->second.size();
-        bool flag = false;
-        std::map<CTritset, std::vector<cv::Point2f> >::iterator iterTableCurrFrame = tableCurrFrame.find(iterTablePrevFrame->first);
-
-        if(iterTableCurrFrame != tableCurrFrame.end() && iterTableCurrFrame->second.size() < sMDP)
+        iterTableCurr = tableCurrFrame.find(gTritsetPrev[i]);
+        if(iterTableCurr != tableCurrFrame.end())
         {
-            for(auto p1 = iterTablePrevFrame->second.begin(); p1 != iterTablePrevFrame->second.end(); p1++)
-                for(auto p2 = iterTableCurrFrame->second.begin(); p2 != iterTableCurrFrame->second.end(); p2++)
+            iterTablePrev = tablePrevFrame.find(gTritsetPrev[i]);
+            bool flag = 0;
+            if(iterTablePrev != tablePrevFrame.end())
+            {
+                std::cout << "    ->" << prevFeatures[i].x << " " << prevFeatures[i].y << " [" << gTritsetPrev[i] << "] := \n";
+                for(auto p2 = iterTableCurr->second.rbegin(); p2 != iterTableCurr->second.rend(); p2++)
                 {
-                    cv::Scalar intensity1 = grayImg.at<uchar>(p1->y, p1->x);
+                    std::cout << p2->x << " " << p2->y <<"\n";
+                }
+                for(auto p2 = iterTableCurr->second.rbegin(); p2 != iterTableCurr->second.rend(); p2++)
+                {
+                    cv::Scalar intensity1 = grayImg.at<uchar>(prevFeatures[i].y, prevFeatures[i].x);
                     cv::Scalar intensity2 = grayImg.at<uchar>(p2->y, p2->x);
-                    if(hypot(abs(p1->x - p2->x), abs(p1->y - p2->y)) <= 70
-                            && intensity2.val[0]/intensity1.val[0] <= 1.2
-                            && intensity2.val[0]/intensity1.val[0] >= 0.8
-                            && !flag)
+                    if(hypot(abs(prevFeatures[i].x - p2->x), abs(prevFeatures[i].y - p2->y)) <= 70)
+                            /*&& intensity2.val[0]/intensity1.val[0] <= 1.2
+                            && intensity2.val[0]/intensity1.val[0] >= 0.8)*/
+                            //&& abs(prevFeatures[i].x - p2->x) + abs(prevFeatures[i].y - p2->y) > 0)
                     {
-                        gFeaturesFoundInTables.push_back((*iterTableCurrFrame).second[0]);
+                        std::cout << prevFeatures[i].x << " " << prevFeatures[i].y << "->>" <<
+                                p2->x << " " << p2->y << "\n";
                         gFeaturesStatus.push_back(1);
-                        gCorrespondenceHypotheses.push_back((*iterTableCurrFrame).second[0]);
-                        flag = true;
-                    } else {
-                        gFeaturesFoundInTables.push_back(cv::Point2f());
-                        gFeaturesStatus.push_back(0);
+                        tritsetCur.push_back(gTritsetPrev[i]);
+                        features.push_back(*p2);
+                        flag = 1;
+                        break;
                     }
+                }
             }
-        } else {
-            gFeaturesFoundInTables.push_back(cv::Point2f());
+            if(!flag)
+            {
+                gFeaturesStatus.push_back(0);
+                features.push_back(cv::Point2f());
+            }
+        }
+        else
+        {
             gFeaturesStatus.push_back(0);
+            features.push_back(cv::Point2f());
         }
     }
 
-    sumSize -= gFeaturesFoundInTables.size();
-    int size = gFeaturesStatus.size();
-    gFeaturesFoundInTables.resize(gFeaturesFoundInTables.size()+sumSize);
-    gFeaturesStatus.resize(gFeaturesStatus.size()+sumSize);
-//    gFeaturesStatus.resize(prevFeatures.size());
-    std::fill(gFeaturesStatus.begin()+size,gFeaturesStatus.end(),0);
+    gTritsetPrev = tritsetCur;
+    std::cout << "compareSignatures end\n";
 
+
+//    gFeaturesFoundInTables.clear();
+//    gFeaturesStatus.clear();
+//    gCorrespondenceHypotheses.clear();
+//    gFeatures2FramesAgo.clear();
+
+//    int sumSize = 0;
+//    int cnt1 = 0;
+//    for(std::map<CTritset, std::vector<cv::Point2f> >::iterator iterTablePrevFrame = tablePrevFrame.begin();
+//        iterTablePrevFrame != tablePrevFrame.end(); ++iterTablePrevFrame)
+//    {
+//        sumSize += iterTablePrevFrame->second.size();
+//        bool flag = false;
+//        std::map<CTritset, std::vector<cv::Point2f> >::iterator iterTableCurrFrame = tableCurrFrame.find(iterTablePrevFrame->first);
+
+//        if(iterTableCurrFrame != tableCurrFrame.end() && iterTableCurrFrame->second.size() < sMDP)
+//        {
+//            for(auto p1 = iterTablePrevFrame->second.begin(); p1 != iterTablePrevFrame->second.end(); p1++)
+//                for(auto p2 = iterTableCurrFrame->second.begin(); p2 != iterTableCurrFrame->second.end(); p2++)
+//                {
+//                    cv::Scalar intensity1 = grayImg.at<uchar>(p1->y, p1->x);
+//                    cv::Scalar intensity2 = grayImg.at<uchar>(p2->y, p2->x);
+//                    if(hypot(abs(p1->x - p2->x), abs(p1->y - p2->y)) <= 70
+//                            && intensity2.val[0]/intensity1.val[0] <= 1.2
+//                            && intensity2.val[0]/intensity1.val[0] >= 0.8
+//                            && !flag)
+//                    {
+//                        std::cout << p1->x << " " << p1->y << "->>" <<
+//                              p2->x << " " << p2->y << "\n";
+//                        gFeaturesFoundInTables.push_back((*iterTableCurrFrame).second.back());
+//                        gFeaturesStatus.push_back(1);
+//                        gCorrespondenceHypotheses.push_back((*iterTableCurrFrame).second.back());
+//                        cnt1++;
+//                        flag = true;
+//                    } else {
+//                        gFeaturesFoundInTables.push_back(cv::Point2f());
+//                        gFeaturesStatus.push_back(0);
+//                    }
+//            }
+//        } else {
+//            gFeaturesFoundInTables.push_back(cv::Point2f());
+//            gFeaturesStatus.push_back(0);
+//        }
+//    }
+//    std::cout << "Finish comparing signatures\n";
+//    DEBUG(gFeaturesFoundInTables.size());
+//    DEBUG(gFeaturesStatus.size());
+//    DEBUG(cnt1);
+//    sumSize -= gFeaturesFoundInTables.size();
+//    DEBUG(sumSize);
+//    int size = gFeaturesStatus.size();
+
+//    gFeaturesFoundInTables.resize(gFeaturesFoundInTables.size()+sumSize);
+//    gFeaturesStatus.resize(gFeaturesStatus.size()+sumSize);
+////    gFeaturesStatus.resize(prevFeatures.size());
+
+//    std::fill(gFeaturesStatus.begin()+size,gFeaturesStatus.end(),0);
 
 //    if(frameCounter > 2) {
 //        for (auto it = gFeaturesFoundInTables.begin(); it != gFeaturesFoundInTables.end(); it++)
@@ -71,7 +140,7 @@ void CSteinTracker::compareSignatures(const cv::Mat & img, const cv::Mat & grayI
 //            {
 //                if(*it == *itr)
 //                {
-//                    std::cout << "sdg > fg size = " << gTableCurrFrame.size() << "\n";
+//                    //std::cout << "sdg > fg size = " << gTableCurrFrame.size() << "\n";
 
 //                    gFeatures2FramesAgo.push_back(*it);
 //                    break;
@@ -81,6 +150,8 @@ void CSteinTracker::compareSignatures(const cv::Mat & img, const cv::Mat & grayI
 //        gFeaturesFoundInTables.clear();
 //        gFeaturesFoundInTables = gFeatures2FramesAgo;
 //    }
+
+
 }
 
 
@@ -137,11 +208,13 @@ void CSteinTracker::makeCandidatesList() { //most frequent features after first 
 void CSteinTracker::setFirstFrame(const cv::Mat & img, const cv::Mat & grayImg,
                                   std::vector<cv::Point2f> & features) {
     std::cout<< "setFirstFrame\n";
+    gTablePrevFrame.clear();
     gListOfCandidates.clear();
+    gTritsetPrev.clear();
 
-    std::cout << "setFirstFrame > features size = " << features.size() << "\n";
-    std::cout << "setFirstFrame > gListOfCandidates size = " << gListOfCandidates.size() << "\n";
-
+    cv::Mat imgBlur;
+    cv::GaussianBlur(grayImg, imgBlur, cv::Size(3,3), 0);
+    //cvSmooth();
     std::map<CTritset, std::vector<cv::Point2f> >::iterator p;
 
     for(size_t i = (sLBP_LENS >> 1); i < (grayImg.cols - (sLBP_LENS >> 1) - 1); i++)
@@ -149,45 +222,31 @@ void CSteinTracker::setFirstFrame(const cv::Mat & img, const cv::Mat & grayImg,
         for(size_t j = (sLBP_LENS >> 1); j < (grayImg.rows - (sLBP_LENS >> 1) - 1); j++)
         {
 
-            CTritset temp = CSteinTracker::lbpFeature(grayImg, j, i);
-            p = gTablePrevFrame.find(temp);
+            CTritset temp = CSteinTracker::lbpFeature(imgBlur, j, i);
+            //p = gTablePrevFrame.find(temp);
             cv::Point2f pt;
             pt.x = i;
             pt.y = j;
-            if (p!= gTablePrevFrame.end()) //if found
-            {
-                p->second.push_back(pt);
-            }
-            else
-            {
-                gTablePrevFrame[temp].push_back(pt);
-            }
+            gTablePrevFrame[temp].push_back(pt);
 
         }
     }
 
-    std::cout << "setFirstFrame > gTablePrevFrame size = " << gTablePrevFrame.size() << "\n";
-
     makeCandidatesList(); //erase features > 10
-
-    std::cout << "setFirstFrame > gListOfCandidates size = " << gListOfCandidates.size() << "\n";
-    std::cout << "setFirstFrame > gTablePrevFrame size  = " << gTablePrevFrame.size() << "\n";
 
     std::vector<cv::Point2f>::iterator i;
     for ( p = gTablePrevFrame.begin(); (p!= gTablePrevFrame.end()); p++)
         for(i = p->second.begin(); i!= p->second.end() ;  i++)
+        {
             features.push_back(*i);
-
-    std::cout << "setFirstFrame > features size = " << features.size() << "\n";
-    std::cout << "----------------------\n";
-
+            gTritsetPrev.push_back((*p).first);
+        }
     frameCounter++;
 }
 
 void CSteinTracker::findNewFeatures(const cv::Mat & img, const cv::Mat & grayImg,
                                     std::vector<cv::Point2f>& features,
                                     const std::vector<cv::Point2f>& old) {
-    std::cout<< "no findNewFeatures\n";
 
 }
 
@@ -195,19 +254,21 @@ void CSteinTracker::findNewFeaturesPosition(const cv::Mat & img,const cv::Mat & 
                                             const std::vector<cv::Point2f>& prevFeatures,
                                             std::vector<cv::Point2f>& features,
                                             std::vector<uchar>& status){
-    std::cout<< "\nfindNewFeaturesPosition \n";
-    std::cout << "findNewFeaturesPosition > frameCounter =  "<< frameCounter << "\n";
-    std::cout << "findNewFeaturesPosition > prevFeatures size = " << prevFeatures.size() << "\n";
-
+    //MSG("FindNewFeaturesPosition start");
+    std::cout << "FindNewFeaturesPosition start\n";
     gTableCurrFrame.clear();
+
+    cv::Mat imgBlur;
+    cv::GaussianBlur(grayImg, imgBlur, cv::Size(3,3), 0);
 
     if (frameCounter < 51) {
         for(size_t i = (sLBP_LENS >> 1); i < (grayImg.cols - (sLBP_LENS >> 1) - 1); i++)
         {
             for(size_t j = (sLBP_LENS >> 1); j < (grayImg.rows - (sLBP_LENS >> 1) - 1); j++)
             {
-                CTritset temp = CSteinTracker::lbpFeature(grayImg, j, i);
-                if (gListOfCandidates.find(temp) == gListOfCandidates.end()) { //if feature not found at SET of candidates
+                CTritset temp = CSteinTracker::lbpFeature(imgBlur, j, i);
+                if (gListOfCandidates.find(temp) == gListOfCandidates.end())
+                { //if feature not found at SET of candidates
                     cv::Point2f pt;
                     pt.x = i;
                     pt.y = j;
@@ -215,34 +276,20 @@ void CSteinTracker::findNewFeaturesPosition(const cv::Mat & img,const cv::Mat & 
                 }
             }
         }
-        compareSignatures(img, grayImg, gTablePrevFrame,gTableCurrFrame, prevFeatures); //compare first and second frame's tables
+        compareSignatures(img, imgBlur, gTablePrevFrame,gTableCurrFrame, prevFeatures, features); //compare first and second frame's tables
         frameCounter++;
     } else {
         frameCounter = 1;
         setFirstFrame(img, grayImg, features);
     }
-    std::cout << "\n";
-    std::cout << "findNewFeaturesPosition > features size = " << features.size() << "\n";
-    std::cout << "findNewFeaturesPosition > gFeaturesFoundInTables size = " << gFeaturesFoundInTables.size() << "\n";
-    std::cout << "findNewFeaturesPosition > status size = " << status.size() << "\n";
-    std::cout << "findNewFeaturesPosition > gFeaturesStatus size = " << gFeaturesStatus.size() << "\n";
-    std::cout << "findNewFeaturesPosition > gTableCurrFrame size = " << gTableCurrFrame.size() << "\n";
-    std::cout << "findNewFeaturesPosition > gTablePrevFrame size = " << gTablePrevFrame.size() << "\n";
 
-    features = gFeaturesFoundInTables;
+    //features = gFeaturesFoundInTables;
     status = gFeaturesStatus;
 
     gTablePrevFrame.clear();
     gTablePrevFrame = gTableCurrFrame;
-
-    std::cout << "-------------------------------------\n";
-    std::cout << "findNewFeaturesPosition > features size = " << features.size() << "\n";
-    std::cout << "findNewFeaturesPosition > gFeaturesFoundInTables size = " << gFeaturesFoundInTables.size() << "\n";
-    std::cout << "findNewFeaturesPosition > status size = " << status.size() << "\n";
-    std::cout << "findNewFeaturesPosition > gFeaturesStatus size = " << gFeaturesStatus.size() << "\n";
-    std::cout << "findNewFeaturesPosition > gTableCurrFrame size = " << gTableCurrFrame.size() << "\n";
-    std::cout << "findNewFeaturesPosition > gTablePrevFrame size = " << gTablePrevFrame.size() << "\n";
-
+    //MSG("FindNewFeaturesPosition end");
+    std::cout << "FindNewFeaturesPosition end\n";
 }
 
 
