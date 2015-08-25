@@ -45,14 +45,21 @@ void CPointTracker::processFrame(const cv::Mat & img, const cv::Mat & grayImg,
    std::cout << "start update tracks"<< std::endl;
    std::vector<int> deletions;
 
-   int cnt1 = 0;
+   int goodLastFrame = 0;
+   int goodStatus = 0;
+   for(; it != mTracks.end(); it++)
+   {
+       if(it->second.lastFrame == mFrameNumber)
+           goodLastFrame++;
+   }
+   it = mTracks.begin();
+
    for(size_t i = 0; i < features.size(); i++, it++)
    {
       while(1)
       {
           if(it->second.lastFrame == mFrameNumber)
               break;
-
          it++;
       }
       if(status[i] != 0)
@@ -61,18 +68,20 @@ void CPointTracker::processFrame(const cv::Mat & img, const cv::Mat & grayImg,
          frame->points[it->first] = temp;
          mPrevFeatures.push_back(features[i]);
          it->second.lastFrame++;
+         //std::cout << "push_back " << *temp << " to " << *(it->second.points.back()) << "\n";
          it->second.points.push_back(temp);
-         cnt1++;
+         goodStatus++;
       }
       else
       {
-          if(it->second.points.size() == 1)
+          if(it->second.points.size() == 1 && mFrameNumber > 2)
           {
              deletions.push_back(it->first);
           }
       }
    }
-   DEBUG(cnt1);
+   DEBUG(goodLastFrame);
+   DEBUG(goodStatus);
    DEBUG(deletions.size());
    for(auto del = deletions.begin(); del != deletions.end(); del++)
    {

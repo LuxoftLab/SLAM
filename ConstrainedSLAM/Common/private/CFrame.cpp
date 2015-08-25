@@ -5,6 +5,7 @@ CFrame::CFrame(IPointTracker::tPointTracks & tracks) : mTracks(tracks) {
 }
 
 CFrame::~CFrame() {
+    std::cout << "destructor" << "\n";
     for(auto it = points.begin(); it != points.end(); it++) {
         PointTrack & track = mTracks[it->first];
         if(track.points.size() == 1) {
