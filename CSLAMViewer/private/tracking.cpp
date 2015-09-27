@@ -1,4 +1,3 @@
-
 #include <map>
 #include <iostream>
 
@@ -11,7 +10,7 @@
 
 
 int main() {
-   cv::VideoCapture capture("/home/getupandgo/Downloads/car2.mp4");
+   cv::VideoCapture capture("/home/getupandgo/Downloads/video.mp4");
    if(!capture.isOpened()) {
       return 1;
    }
@@ -39,7 +38,6 @@ int main() {
              {
                  int dx = it->second.lastFrame - it->second.firstFrame + 1;
                 cv::circle(frame, **itr, 10,
-                           //cv::Scalar(it->first*5, it->first*5, 0));
                            cv::Scalar(255 - dx*40,
                                       255,
                                       255));

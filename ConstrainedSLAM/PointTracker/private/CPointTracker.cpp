@@ -6,7 +6,6 @@
 
 #include "Common/LogUtils/CProfiler.hpp"
 
-#define DEBUG(v) std::cout << #v << " = " << v << "\n";
 
 CPointTracker::CPointTracker(const int framesNumber, const size_t minPoints,
                              const int maxPoints) :
@@ -24,7 +23,8 @@ void CPointTracker::processFrame(const cv::Mat & img, const cv::Mat & grayImg,
                                  const SensorData & sensors)
 {
    START_PROFILING(profiler);
-   if(mFrameNumber == 0) {
+   if(mFrameNumber % 50 == 0)
+   {
       processFirstFrame(img, grayImg);
       return;
    }
@@ -33,26 +33,17 @@ void CPointTracker::processFrame(const cv::Mat & img, const cv::Mat & grayImg,
    std::vector<uchar> status;
    mTracker->findNewFeaturesPosition(img, grayImg, mPrevFeatures, features, status);
 
-   std::cout << "mPrevFeatures.size() = "<<mPrevFeatures.size() << std::endl;
-   std::cout << "features = "<< features.size() << std::endl;
-   std::cout << "mTracks.size: " << mTracks.size() << "\n";
+   __LOG_VAL(mPrevFeatures.size());
+   __LOG_VAL(features.size());
+   __LOG_VAL(mTracks.size());
 
    mPrevFeatures.clear();
    tFramePtr frame(new CFrame(mTracks));
    auto it = mTracks.begin();
 
+   __LOG_MSG("start update tracks");
 
-   std::cout << "start update tracks"<< std::endl;
    std::vector<int> deletions;
-
-   int goodLastFrame = 0;
-   int goodStatus = 0;
-   for(; it != mTracks.end(); it++)
-   {
-       if(it->second.lastFrame == mFrameNumber)
-           goodLastFrame++;
-   }
-   it = mTracks.begin();
 
    for(size_t i = 0; i < features.size(); i++, it++)
    {
@@ -68,9 +59,7 @@ void CPointTracker::processFrame(const cv::Mat & img, const cv::Mat & grayImg,
          frame->points[it->first] = temp;
          mPrevFeatures.push_back(features[i]);
          it->second.lastFrame++;
-         //std::cout << "push_back " << *temp << " to " << *(it->second.points.back()) << "\n";
          it->second.points.push_back(temp);
-         goodStatus++;
       }
       else
       {
@@ -80,14 +69,13 @@ void CPointTracker::processFrame(const cv::Mat & img, const cv::Mat & grayImg,
           }
       }
    }
-   DEBUG(goodLastFrame);
-   DEBUG(goodStatus);
-   DEBUG(deletions.size());
+   __LOG_VAL(deletions.size());
+
    for(auto del = deletions.begin(); del != deletions.end(); del++)
    {
        mTracks.erase(*del);
    }
-   std::cout << "finish update tracks"<< std::endl;
+   __LOG_MSG("finish update tracks");
 
    mFrameNumber++;
 
@@ -118,7 +106,8 @@ void CPointTracker::processFirstFrame(const cv::Mat & img, const cv::Mat & grayI
    mFrameNumber = 1;
    mTracker->setFirstFrame(img, grayImg, mPrevFeatures);
 
-   std::cout << "found features: " << mPrevFeatures.size() << std::endl;
+   __LOG_MSG("found features: " << mPrevFeatures.size());
+
    tFramePtr frame(new CFrame(mTracks));
    addNewPoints(frame, mPrevFeatures);
    mFrames.push_back(frame);
